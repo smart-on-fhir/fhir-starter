@@ -31,6 +31,12 @@ function urlParam(p, forceArray) {
   return result[0];
 }
 
+function getPreviousToken(){
+  var ret = sessionStorage.tokenResponse;
+  if (ret) ret = JSON.parse(ret);
+  return ret;
+}
+
 function completeTokenFlow(hash){
   if (!hash){
     hash = window.location.hash;
@@ -86,6 +92,14 @@ function completeCodeFlow(params){
   return ret.promise();
 };
 
+function completePageReload(){
+  var d = $.Deferred();
+  process.nextTick(function(){
+    d.resolve(getPreviousToken());
+  });
+  return d;
+}
+
 
 BBClient.ready = function(input, callback){
 
@@ -98,13 +112,17 @@ BBClient.ready = function(input, callback){
   var isCode = urlParam('code') || (input && input.code);
 
   var accessTokenResolver = null;
-  if (isCode) {
+  if (sessionStorage.tokenResponse) { // we're reloading after successful completion
+    accessTokenResolver = completePageReload();
+  } else if (isCode) { // code flow
     accessTokenResolver = completeCodeFlow(input);
-  } else if (!isCode) {
+  } else { // token flow
     accessTokenResolver = completeTokenFlow(input);
   }
 
   accessTokenResolver.then(function(tokenResponse){
+
+    sessionStorage.tokenResponse = JSON.stringify(tokenResponse);
 
     var state = JSON.parse(sessionStorage[tokenResponse.state]);
     if (state.fake_token_response) {
