@@ -10,10 +10,18 @@
       onStorage();
       window.addEventListener('storage', onStorage, false);
       function onStorage(){
+      
         if (window.localStorage[key] === 'requested-launch') {
           return;
         }
+        
         var details = JSON.parse(window.localStorage[key]);
+        
+        // Session storage is inherited from opening window, so
+        // we need to purge the tokenResponse here to avoid passing
+        // the FHIR Starter's token credentials to the app
+        delete sessionStorage.tokenResponse;
+        
         window.location = details.app.launch_uri + 
         '?iss=' + details.iss + 
         '&launch=' + details.context.launch_id;
