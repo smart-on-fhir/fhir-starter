@@ -94,14 +94,6 @@ function completeCodeFlow(params){
   });;
 
   return ret.promise();
-};
-
-function completePageReload(){
-  var d = $.Deferred();
-  process.nextTick(function(){
-    d.resolve(getPreviousToken());
-  });
-  return d;
 }
 
 function completePageReload(){
@@ -156,8 +148,7 @@ BBClient.ready = function(input, callback, errback){
   var isCode = urlParam('code') || (args.input && args.input.code);
 
   var accessTokenResolver = null;
-  var tokenResponse = getPreviousToken();
-  if (tokenResponse && tokenResponse.patient) { // we're reloading after successful completion
+  if (sessionStorage.tokenResponse) { // we're reloading after successful completion
     accessTokenResolver = completePageReload();
   } else if (isCode) { // code flow
     accessTokenResolver = completeCodeFlow(input);
@@ -170,8 +161,6 @@ BBClient.ready = function(input, callback, errback){
       return args.errback("No 'state' parameter found in authorization response.");
     }
     
-    sessionStorage.tokenResponse = JSON.stringify(tokenResponse);
-
     sessionStorage.tokenResponse = JSON.stringify(tokenResponse);
 
     var state = JSON.parse(sessionStorage[tokenResponse.state]);
