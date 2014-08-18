@@ -94,6 +94,14 @@ function completeCodeFlow(params){
   });;
 
   return ret.promise();
+};
+
+function completePageReload(){
+  var d = $.Deferred();
+  process.nextTick(function(){
+    d.resolve(getPreviousToken());
+  });
+  return d;
 }
 
 function completePageReload(){
@@ -162,6 +170,8 @@ BBClient.ready = function(input, callback, errback){
       return args.errback("No 'state' parameter found in authorization response.");
     }
     
+    sessionStorage.tokenResponse = JSON.stringify(tokenResponse);
+
     sessionStorage.tokenResponse = JSON.stringify(tokenResponse);
 
     var state = JSON.parse(sessionStorage[tokenResponse.state]);
