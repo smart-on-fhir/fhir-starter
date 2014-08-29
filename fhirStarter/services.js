@@ -284,4 +284,16 @@ angular.module('fhirStarter').factory('app', ['$http',function($http) {
   return apps;
 }]);
 
+angular.module('fhirStarter').factory('customFhirApp', function() {
 
+  var app = localStorage.customFhirApp ? 
+  JSON.parse(localStorage.customFhirApp) : {id: "", url: ""};
+
+  return {
+    get: function(){return app;},
+    set: function(app){
+      localStorage.customFhirApp = JSON.stringify(app);
+    }
+  }
+
+});

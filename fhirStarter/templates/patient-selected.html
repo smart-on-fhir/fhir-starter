@@ -15,6 +15,17 @@
           </div>
         </div>
         </li>
+        <li class="span3">
+        <div class="thumbnail">
+          <div>
+            <input type="text" ng-model="customapp.id" placeholder="App ID" required /><br/>
+            <input type="text" ng-model="customapp.url" placeholder="Launch URL" required />
+          </div>
+          <div class="caption">
+            <a ng-click="launchCustom()" target="_blank" class="btn btn-block btn-primary">Custom App</a>
+          </div>
+        </div>
+        </li>
       </ul>
     </div>
   </div>

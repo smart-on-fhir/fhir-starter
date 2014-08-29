@@ -182,7 +182,7 @@ angular.module('fhirStarter').controller("ErrorsController",
         });
 
 
-        angular.module('fhirStarter').controller("PatientViewController", function($scope, patient, app, patientSearch, $routeParams, $rootScope, $location, fhirSettings, random) {
+        angular.module('fhirStarter').controller("PatientViewController", function($scope, patient, app, patientSearch, $routeParams, $rootScope, $location, fhirSettings, random, customFhirApp) {
           $scope.all_apps = [];
           app.success(function(apps){
             $scope.all_apps = apps;
@@ -212,6 +212,15 @@ angular.module('fhirStarter').controller("ErrorsController",
             });
           }
 
+          $scope.customapp = customFhirApp.get();
+          
+          $scope.launchCustom = function launchCustom(){
+            customFhirApp.set($scope.customapp);
+            $scope.launch({
+                client_id: $scope.customapp.id,
+                launch_uri: $scope.customapp.url
+            });
+          }
 
           $scope.givens = function(name) {
             return name && name.givens.join(" ");
