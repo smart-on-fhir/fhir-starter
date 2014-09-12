@@ -4,25 +4,25 @@
       "client_id": "cardiac_risk",
       "launch_uri": "apps/cardiac-risk/launch.html",
       "redirect_uri": "apps/cardiac-risk/",
-      "logo_uri": "http://smartplatforms.org/wp-content/uploads/2012/09/cardiac-risk-216x300.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/cardio.png"
     }, {
       "client_name": "Growth Chart",
       "client_id": "growth_chart",
       "launch_uri": "apps/growth-chart/launch.html",
       "redirect_uri": "apps/growth-chart/",
-      "logo_uri": "http://smartplatforms.org/wp-content/uploads/pgc-male-healthyweight-os.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/pgc.png"
     }, {
       "client_name": "BP Centiles",
       "client_id": "bp_centiles",
       "launch_uri": "apps/bp-centiles/launch.html",
       "redirect_uri": "apps/bp-centiles/",
-      "logo_uri": "http://vectorblog.org/wp-content/uploads/2012/09/BP-Centiles-screengrab-300x211.jpg"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/bpc.png"
     }, {
       "client_name": "Diabetes Monograph",
       "client_id": "diabetes_monograph",
       "launch_uri": "apps/diabetes-monograph/launch.html",
       "redirect_uri": "apps/diabetes-monograph/",
-      "logo_uri": "http://smartplatforms.org/wp-content/uploads/2012/10/Diabetes-Monograph-App-1.2-19Oct2012-Snap.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/monograph.png"
     }, {
       "client_name": "Disease Monograph",
       "client_id": "disease_monograph",
@@ -34,13 +34,13 @@
       "client_id": "fhir_demo",
       "launch_uri": "apps/fhir-demo/app/launch.html",
       "redirect_uri": "apps/fhir-demo/app/",
-      "logo_uri": "http://www.hl7.org/implement/standards/fhir/assets/images/fhir-logo-www.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/demo.png"
     }, {
       "client_name": "My Web App",
       "client_id": "my_web_app",
       "launch_uri": "http://localhost:8000/fhir-app/launch.html",
       "redirect_uri": "http://localhost:8000/fhir-app/",
-      "logo_uri": "http://sandbox.smartplatforms.org/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/my.png"
     }, {
       "client_name": "My Mobile App",
       "client_id": "my_mobile_app",
