@@ -22,7 +22,8 @@ angular.module('fhirDemoApp')
       'FamilyHistory': patient.FamilyHistory.where,
       'AllergyIntolerance': patient.AllergyIntolerance.where,
       'DocumentReference': patient.DocumentReference.where,
-      'ImagingStudy': patient.ImagingStudy.where
+      'ImagingStudy': patient.ImagingStudy.where,
+      'CarePlan': patient.CarePlan.where
     };
 
     $scope.resourceUrl = function(){
