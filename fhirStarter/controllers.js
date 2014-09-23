@@ -140,7 +140,7 @@ angular.module('fhirStarter').controller("ErrorsController",
           };
 
           $scope.hasNext = function(){
-            return $scope.patients.length === $scope.nPerPage;
+            return patientSearch.hasNext();
           };
 
           $scope.$watch("patients", function(p){

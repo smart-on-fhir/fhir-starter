@@ -208,6 +208,14 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
       });
       return d.promise;
     },
+    
+    hasNext: function(p){
+      if (currentSearch) {
+         return currentSearch.hasNext();
+      } else {
+         return false;
+      }
+    },
 
     previous: function(p){
       atPage -= 1;
