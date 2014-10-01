@@ -188,28 +188,43 @@ angular.module('fhirStarter').controller("ErrorsController",
             $scope.all_apps = apps;
           });
           $scope.patientHelper = patient;
-          $scope.fhirServiceUrl = fhirSettings.get().serviceUrl
+          
+          var settings = fhirSettings.get();
+          $scope.fhirServiceUrl = settings.serviceUrl;
+          $scope.fhirAuthType = settings.auth.type;
 
-          $scope.launch = function launch(app){
+          if ($scope.fhirAuthType === "none") {
+               $scope.launch = function launch(app){
 
-            /* Hack to get around the window popup behavior in modern web browsers
-            (The window.open needs to be synchronous with the click even to
-            avoid triggering  popup blockers. */
+                /* Hack to get around the window popup behavior in modern web browsers
+                (The window.open needs to be synchronous with the click even to
+                avoid triggering  popup blockers. */
 
-            var key = random(32);
-            window.localStorage[key] = "requested-launch";
-            window.open('launch.html?'+key, '_blank');
+                window.open(app.launch_uri+'?fhirServiceUrl='+$scope.fhirServiceUrl+"&patientId="+$routeParams.pid, '_blank');
 
-            patientSearch
-            .registerContext(app, {patient: $routeParams.pid})
-            .then(function(c){
-              console.log(patientSearch.smart());
-              window.localStorage[key] = JSON.stringify({
-                app: app,
-                iss: patientSearch.smart().server.serviceUrl,
-                context: c
-              });
-            });
+              }
+          } else {
+              $scope.launch = function launch(app){
+
+                /* Hack to get around the window popup behavior in modern web browsers
+                (The window.open needs to be synchronous with the click even to
+                avoid triggering  popup blockers. */
+
+                var key = random(32);
+                window.localStorage[key] = "requested-launch";
+                window.open('launch.html?'+key, '_blank');
+
+                patientSearch
+                .registerContext(app, {patient: $routeParams.pid})
+                .then(function(c){
+                  console.log(patientSearch.smart());
+                  window.localStorage[key] = JSON.stringify({
+                    app: app,
+                    iss: patientSearch.smart().server.serviceUrl,
+                    context: c
+                  });
+                });
+              }
           }
 
           $scope.customapp = customFhirApp.get();
