@@ -108,9 +108,10 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
 
   function  getClient(){
     if ($routeParams.code){
+      delete sessionStorage.tokenResponse;
       FHIR.oauth2.ready($routeParams, function(smartNew){
         smart = smartNew;
-        window.smaht = smart;
+        window.smart = smart;
         didOauth = true;
         $rootScope.$emit('new-client');
       });
