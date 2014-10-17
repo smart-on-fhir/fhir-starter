@@ -28,7 +28,7 @@
       "client_id": "disease_monograph",
       "launch_uri": "apps/disease-monograph/launch.html",
       "redirect_uri": "apps/disease-monograph/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/monograph.png"
+      "logo_uri": "https://fhir.smartplatforms.org/images/apps/dm.png"
     }, {
       "client_name": "FHIR Demo App",
       "client_id": "fhir_demo",
