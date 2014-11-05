@@ -115,6 +115,10 @@ angular.module('fhirStarter').controller("ErrorsController",
           $rootScope.$on('new-client', function(){
             $scope.getMore();
           })
+          
+          $rootScope.$on('set-loading', function(){
+            $scope.setLoading();
+          })
 
           $scope.nextPage = function(){
             if (!$scope.hasNext()) return;
