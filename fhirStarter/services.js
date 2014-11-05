@@ -94,6 +94,17 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
         client: client,
         server: s.serviceUrl,
         from: $location.url()
+      }, function (err) {
+        authorizing = false;
+        $rootScope.$emit('error', err);
+        $rootScope.$emit('set-loading');
+        $rootScope.$emit('clear-client');
+        var loc = "/ui/select-patient";
+        if ($location.url() !== loc) {
+            $location.url(loc);
+            
+        }
+        $rootScope.$digest();
       });
     }
   };
@@ -133,7 +144,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   
    function onNewClient(){
       if (smart && smart.state && smart.state.from !== undefined){
-        console.log(smart, 'back to from', smart.state.from);
+        console.log(smart, 'back from', smart.state.from);
         $location.url(smart.state.from);
         $rootScope.$digest();
       }
@@ -146,6 +157,14 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
       getClient();
     }
   });
+  
+  $rootScope.$on('reconnect-request', function(){
+      if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2') getClient();
+  })
+  
+  $rootScope.$on('clear-client', function(){
+      smart = null;
+  })
 
   $rootScope.$on('new-client', onNewClient);
 
@@ -202,9 +221,11 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
         d.resolve(r)
         $rootScope.$digest();
       }).fail(function(){
+        $rootScope.$emit('reconnect-request');
         $rootScope.$emit('error', 'Search failed (see console)');
         console.log("Search failed.");
         console.log(arguments);
+        d.reject();
         $rootScope.$digest();
       });
       return d.promise;
@@ -236,6 +257,12 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
           pages.push(r);
           d.resolve(r);
           $rootScope.$digest();
+        }).fail(function(){
+            $rootScope.$emit('reconnect-request');
+            $rootScope.$emit('error', 'Search failed (see console)');
+            console.log("Search failed.");
+            d.reject();
+            $rootScope.$digest();
         });
       }
 
@@ -252,6 +279,12 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
       }
       smart.api.Patient.read(pid).done(function(p){
         d.resolve(p);
+        $rootScope.$digest();
+      }).fail(function(){
+        $rootScope.$emit('reconnect-request');
+        $rootScope.$emit('error', 'Patient read failed (see console)');
+        console.log("Patient read failed.");
+        d.reject();
         $rootScope.$digest();
       });
       return d.promise;
