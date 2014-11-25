@@ -233,7 +233,11 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
     
     hasNext: function(p){
       if (currentSearch) {
-         return currentSearch.hasNext();
+         if (currentSearch.hasNext()) {
+            return true;
+         } else {
+            return pages.length > atPage + 1;
+         }
       } else {
          return false;
       }
