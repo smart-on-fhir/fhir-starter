@@ -32,7 +32,7 @@ function initialize (settings) {
         api_server_uri: urlParam("iss")
     });
     clearAuthToken();
-    authorize();
+    refreshApp();
 }
 
 function completeAuth () {
