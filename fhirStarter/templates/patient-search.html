@@ -17,16 +17,12 @@
   </div>
   <div class="row">
     <div class="span6 result">
-      <div id="loading-patient-results"
-        ng-show="loading && !oauth2.authorizing()">
-        <h1>Loading results...</h1>
-      </div>
       <div id="signing in"
         ng-show="oauth2.authorizing()">
         <h1>Signing in...</h1>
       </div>
-      <div id="patient-results" ng-cloak >
-        <table class="table table-striped table-hover table-condensed" ng-class="{loading:loading}">
+      <div id="patient-results" ng-cloak when-scrolling="loadMoreIfNeeded()">
+        <table class="table table-striped table-hover table-condensed">
           <tr class="patient-row" ng-click="select($index)" ng-repeat="patient in patients">
             <td class="gender" 
               ng-bind-html="genderglyph[patient.gender.coding[0].code]"></td>
@@ -34,32 +30,16 @@
               <span ng-bind="patientHelper.name(patient)"></span>
             </td>
             <td><i><span ng-bind="patient.birthDate | date"/></i></td>
-            </tr>
-            <tr ng-repeat="blank in blanks track by $index">
-              <td class="gender"></td>
-              <td colspan="2">
-                <span ng-show="!loading && !oauth2.authorizing() && (patients.length==0) && $first">
-                  No matches -- try broadening your search.
-                </span>
-              </span>&nbsp;
-            </td>
           </tr>
         </table>
-
-        <ul class="pager">
-          <li class="previous pull-left" 
-          click-on-key="alt_80"
-          ng-class="{true:'',false:'disabled'}[hasPrevious()]"
-          ng-click="previousPage()">
-          <a><span class="shortcut">P</span>revious {{nPerPage}}</a>
-          </li>
-          <li class="next  pull-right" 
-          click-on-key="alt_78"
-          ng-class="{true:'',false:'disabled'}[hasNext()]"
-          ng-click="nextPage()">
-          <a><span class="shortcut">N</span>ext {{nPerPage}}</a></li>
-        </ul>
-
+        
+        <div ng-show="!loading && !oauth2.authorizing() && (patients.length==0)">
+          <p>No matches, try broadening your search.</p>
+        </div>
+        
+        <div id="loading-patient-results" ng-show="loading && !oauth2.authorizing()">
+          <p>Loading...</p>
+        </div>
       </div>
     </div>
   </div>

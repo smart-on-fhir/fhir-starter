@@ -93,7 +93,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   var smart;
   var didOauth = false;
 
-  function  getClient(){
+  function getClient(){
     if ($routeParams.code){
       delete sessionStorage.tokenResponse;
       FHIR.oauth2.ready($routeParams, function(smartNew){
@@ -188,7 +188,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
       };
       smart.api.Patient.where
       .nameAll(p.tokens)
-      ._count(10)
+      ._count(25)
       ._sortAsc("family")
       ._sortAsc("given")
       .search()
