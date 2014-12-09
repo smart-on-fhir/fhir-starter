@@ -22,14 +22,14 @@
         <h1>Signing in...</h1>
       </div>
       <div id="patient-results" ng-cloak when-scrolling="loadMoreIfNeeded()">
-        <table class="table table-striped table-hover table-condensed">
+        <table class="table table-striped table-hover">
           <tr class="patient-row" ng-click="select($index)" ng-repeat="patient in patients">
             <td class="gender" 
               ng-bind-html="genderglyph[patient.gender.coding[0].code]"></td>
             <td class="name">
               <span ng-bind="patientHelper.name(patient)"></span>
             </td>
-            <td><i><span ng-bind="patient.birthDate | date"/></i></td>
+            <td><i ng-bind="patient.birthDate | date"></i></td>
           </tr>
         </table>
         

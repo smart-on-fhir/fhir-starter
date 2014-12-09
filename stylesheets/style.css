@@ -1,9 +1,16 @@
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding-top: 60px;
+  font: 1em "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
   color: #00b7ff;
 }
+table h2 { margin-bottom: 0em; }
+.table th, .table td {
+  padding: 6px;
+  vertical-align: middle; line-height: auto;
+}
+
 
 /* Custom Styles */
 
@@ -15,11 +22,6 @@ a {
 img.smartlogo {
 	float: right;
 	margin-top: -0.4em;
-}
-
-body {
-   padding-top: 60px;
-   overflow-y: scroll;
 }
 
 .controls {
@@ -78,7 +80,6 @@ body {
    padding-bottom: 1.5em;
 }
 
-table h2 {margin-bottom: 0em;}
 
 .histogram {
    float: right;
@@ -155,3 +156,23 @@ ul.thumbnails li.span3:nth-child(4n + 5) {
 ul.thumbnails li.span12 + li {
   margin-left : 0px;
 }
+
+
+
+/* small devices */
+@media screen and (max-width: 979px) {
+  body {
+    padding-top: 0px; padding-left: 15px; padding-right: 15px;
+    font-size: 1.15em;
+  }
+  .table th, .table td {
+    padding: 12px 5px;
+  }
+  .table th:first-of-type, .table td:first-of-type {
+    padding-left: 2px;
+  }
+  .table th:last-of-type, .table td:last-of-type {
+    padding-right: 2px;
+  }
+}
+
