@@ -3,29 +3,35 @@ angular.module('fhirStarter', ['ngAnimate', 'ngRoute','ngSanitize'], function($r
   $routeProvider.when('/ui/select-patient', {
     templateUrl:'fhirStarter/templates/select-patient.html',
     reloadOnSearch:false
-  }) 
+  });
 
   $routeProvider.when('/resolve/:context/against/:iss/for/:clientName/then/:endpoint', {
     templateUrl:'fhirStarter/templates/resolve.html'
-  }) 
+  });
 
-  $routeProvider.otherwise({redirectTo:'/ui/select-patient'});
+  $routeProvider.otherwise({redirectTo:'/ui/start'});
 
   $routeProvider.when('/ui/patient-selected/:pid', {
     templateUrl:'fhirStarter/templates/patient-selected.html',
   });
 
   $routeProvider.when('/ui/authorize', {
-    templateUrl:'fhirStarter/templates/authorize-app.html',
-  });
-
-  $routeProvider.when('/after-auth', {
-    templateUrl:'fhirStarter/templates/start.html',
+    templateUrl:'fhirStarter/templates/auth.html',
     controller: function(){
     
     }
   });
 
+  $routeProvider.when('/after-auth', {
+    templateUrl:'fhirStarter/templates/auth.html',
+    controller: function(){
+    
+    }
+  });
+
+  $routeProvider.when('/ui/start', {
+    templateUrl:'fhirStarter/templates/start.html',
+  });
 
   $locationProvider.html5Mode(false);
 

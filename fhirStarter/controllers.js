@@ -9,6 +9,18 @@ angular.module('fhirStarter').controller("MainController",
 angular.module('fhirStarter').controller("StartController", 
   function($scope, $routeParams, $rootScope, $location, fhirSettings, patientSearch){
     console.log("Start", $routeParams);
+    
+    $scope.connect = function(){
+        console.log("clicked on connect");
+        $rootScope.$emit('reconnect-request');
+        $location.path('ui/authorize');
+    }
+  }
+);
+
+angular.module('fhirStarter').controller("AuthController", 
+  function($scope, $routeParams, $rootScope, $location, fhirSettings, patientSearch){
+    console.log("Auth", $routeParams);
   }
 );
 
@@ -21,6 +33,7 @@ angular.module('fhirStarter').controller("ErrorsController",
         return;
       }
       $scope.errors.push(e);
+      $location.url("/ui/start");
     })
 
     $scope.clearError = function(i){
@@ -257,5 +270,9 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
   $scope.givens = function(name) {
     return name && name.givens.join(" ");
   };
+  
+  $scope.goToPatientSelector = function() {
+    $location.url("/ui/select-patient");
+  }
 
 });

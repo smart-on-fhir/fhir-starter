@@ -75,11 +75,7 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
         $rootScope.$emit('error', err);
         $rootScope.$emit('set-loading');
         $rootScope.$emit('clear-client');
-        var loc = "/ui/select-patient";
-        if ($location.url() !== loc) {
-            $location.url(loc);
-            
-        }
+        $location.url("/ui/start");
         $rootScope.$digest();
       });
     }
@@ -111,8 +107,10 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
         }
       });
     } else if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2'){
+      console.log ("case 2");
       oauth2.authorize(fhirSettings.get());
     } else {
+      console.log ("case 3");
       smart = new FHIR.client(fhirSettings.get());
       $rootScope.$emit('new-client');
     }
@@ -121,16 +119,27 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
    function onNewClient(){
       if (smart && smart.state && smart.state.from !== undefined){
         console.log(smart, 'back from', smart.state.from);
-        $location.url(smart.state.from);
+        var to = smart.state.from;
+        if (to === "/ui/authorize" || to === "/ui/start") to = "/ui/select-patient";
+        $location.url(to);
         $rootScope.$digest();
+      } else {
+        if ($location.url() === "/ui/authorize") $location.url("/ui/select-patient");
       }
    }
 
   $rootScope.$on('$routeChangeSuccess', function (scope, next, current) {
     console.log('route changed', scope, next, current);
     console.log('so params', $routeParams);
-    if (current === undefined) {
-      getClient();
+
+    function endsWith(str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
+    if (current === undefined && !endsWith($location.path(), "start")) {
+        console.log ("get new client on routeChange");
+        getClient();
+    } else {
     }
   });
   
@@ -278,7 +287,8 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   };
 });
 
-angular.module('fhirStarter').factory('random', function() {
+angular.module('fhirStarter').factory('random', function($route, $routeParams, $location, $window, $rootScope, $q) {
+    console.log('initialzing random service');
   var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   return function randomString(length) {
     var result = '';
