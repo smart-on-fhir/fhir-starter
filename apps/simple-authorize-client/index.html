@@ -2,8 +2,8 @@
 <html>
   <head>
      <title>User Profile</title>
-     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-     <script src="fhir-client.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="fhir-client.js"></script>
      <script src="app.js"></script>
   </head>
   <body>
@@ -21,10 +21,11 @@
                 document.body.innerHTML += "<p><input type='submit' value='Sign In' onClick='authorize()'></p>";
             }
         } else {
-            $.when(getPatientName())
-             .then(function (name) {
+            $.when(getPatientName(),  getUserName())
+             .then(function (patient_name, user_name) {
                 document.body.innerHTML += "<p>" + new Date() + "</p>";
-                document.body.innerHTML += "<p>Current patient: " + name + "</p>";
+                document.body.innerHTML += "<p>Current user: " + user_name + "</p>";
+                document.body.innerHTML += "<p>Current patient: " + patient_name + "</p>";
                 document.body.innerHTML += "<p><input type='submit' value='Sign Out' onClick='signout()'></p>";
              })
              .fail(function () {

@@ -101,3 +101,35 @@ function getPatientName () {
 
     return ret.promise();
 }
+
+function getUserName () {
+    var ret = $.Deferred();
+    
+    FHIR.oauth2.ready(function(smart){
+        var user = smart.context.user;
+
+         $.when(user.read())
+          .then(function(pt) {
+            if (pt) {
+                var name;
+                if (pt.resourceType === "Practitioner" || pt.resourceType === "RelatedPerson") {
+                    name = pt.name.given.join(" ") +" "+ pt.name.family.join(" ");
+                    ret.resolve(name);
+                } else if (pt.resourceType === "Patient") {
+                    name = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
+                    ret.resolve(name);
+                } else {
+                    ret.reject("Could not fetch user name");
+                }
+            } else {
+                ret.resolve(pt);
+            }
+          })
+          .fail(function() {
+            ret.reject("Could not fetch user name");
+          });
+
+    });
+
+    return ret.promise();
+}
