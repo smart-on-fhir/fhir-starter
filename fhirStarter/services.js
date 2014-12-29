@@ -170,7 +170,8 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
 
   $rootScope.$on('new-settings', function(e){
     sessionStorage.clear();
-    getClient()
+    getClient();
+    $route.reload();
   });
 
 
