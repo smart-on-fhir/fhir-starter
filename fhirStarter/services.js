@@ -25,7 +25,7 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
       }
     }, {
       name: 'Health Intersections Server (Grahame)',
-      serviceUrl: 'http://fhir.healthintersections.com.au/open/',
+      serviceUrl: 'http://fhir.healthintersections.com.au/open',
       auth: {
         type: 'none'
       }
