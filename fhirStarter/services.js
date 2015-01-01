@@ -2,26 +2,10 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
 
   var servers = [
     {
-      name: 'Local FHIR dev server, oauth',
+      name: 'Local FHIR dev server, oauth2',
       serviceUrl: 'http://localhost:9080',
       auth: {
         type: 'oauth2',
-      }
-    }, {
-      name: "SMART on FHIR (smartplatforms.org)",
-      serviceUrl: "https://fhir-api.smartplatforms.org",
-      auth: {
-        type: "basic",
-        username: "client",
-        password: "secret"
-      }
-    }, {
-      name: 'SMART on FHIR (fhir.me)',
-      serviceUrl: 'https://api.fhir.me',
-      auth: {
-        type: 'basic',
-        username: 'client',
-        password: 'secret'
       }
     }, {
       name: 'Health Intersections Server (Grahame)',
@@ -34,14 +18,6 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
       serviceUrl: 'http://spark.furore.com/fhir',
       auth: {
         type: 'none'
-      }
-    }, {
-      name: 'Local FHIR dev server, basic auth',
-      serviceUrl: 'http://localhost:9080',
-      auth: {
-        type: 'basic',
-        username: 'client',
-        password: 'secret'
       }
     }, {
       name: 'Local FHIR dev server, no auth',
