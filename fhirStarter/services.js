@@ -34,14 +34,25 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
   return {
     servers: servers,
     get: function(){return settings;},
-    set: function(s){
-      settings = s;
-      localStorage.fhirSettings = JSON.stringify(settings);
-      if (settings.auth.type !== "oauth2") {
-        $rootScope.$emit('noauth-mode');
-        //$route.reload();
-      }
-      $rootScope.$emit('new-settings');
+    set: function(settings){
+      FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
+      
+        // override the security type with the one resolved via introspection
+        // of the conformance statement
+        settings.auth.type = type;
+
+        localStorage.fhirSettings = JSON.stringify(settings);
+
+        if (settings.auth.type !== "oauth2") {
+            $rootScope.$emit('noauth-mode');
+            //$route.reload();
+        }
+
+        $rootScope.$emit('new-settings');
+        
+      }, function (err) {
+        $rootScope.$emit('error', err);
+      });
     }
   }
 
