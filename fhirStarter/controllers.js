@@ -1,26 +1,56 @@
 angular.module('fhirStarter').controller("MainController", 
   function($scope, $route, $rootScope, $location, fhirSettings, patientSearch){
     $scope.showing = {
-      settings: false
+      settings: false,
+      signin: true,
+      signout: false
     };
+    
+    if (fhirSettings.get().auth.type !== 'oauth2') {
+        $scope.showing.signin = false;
+        $scope.showing.signout = false;
+        patientSearch.getClient();
+    }
+    
+    $scope.signin = function(){
+        $rootScope.$emit('reconnect-request');
+    }
+    
+    $scope.signout = function(){
+        $scope.showing.signin = true;
+        $scope.showing.signout = false;
+        $rootScope.$emit('clear-client');
+        $route.reload();
+    }
+    
+    $scope.isAuthorized = function(){
+        if (patientSearch.smart() || fhirSettings.get().auth.type !== 'oauth2') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    $rootScope.$on('signed-in', function(){
+        $scope.showing.signin = false;
+        $scope.showing.signout = true;
+    });
+    
+    $rootScope.$on('noauth-mode', function(){
+        $scope.showing.signin = false;
+        $scope.showing.signout = false;
+    });
   }
 );
 
 angular.module('fhirStarter').controller("StartController", 
   function($scope, $routeParams, $rootScope, $location, fhirSettings, patientSearch){
     console.log("Start", $routeParams);
-    
-    $scope.connect = function(){
-        console.log("clicked on connect");
-        $rootScope.$emit('reconnect-request');
-        $location.path('ui/authorize');
-    }
-  }
-);
-
-angular.module('fhirStarter').controller("AuthController", 
-  function($scope, $routeParams, $rootScope, $location, fhirSettings, patientSearch){
-    console.log("Auth", $routeParams);
+    $rootScope.$emit('init-client');
+    //$scope.connect = function(){
+    //    $rootScope.$emit('reconnect-request');
+    //    $location.path('ui/authorize');
+    //}
   }
 );
 
@@ -33,7 +63,6 @@ angular.module('fhirStarter').controller("ErrorsController",
         return;
       }
       $scope.errors.push(e);
-      $location.url("/ui/start");
     })
 
     $scope.clearError = function(i){
@@ -64,11 +93,21 @@ angular.module('fhirStarter').controller("SettingsController",
 
 angular.module('fhirStarter').controller("PatientViewWrapper",  
   function($scope, $routeParams, patientSearch) {
-    $scope.loading = true;
-    patientSearch.getOne($routeParams.pid).then(function(p){
-      $scope.loading = false;
-      $scope.patient = p;
-    });
+    if ($scope.isAuthorized()) {
+        $scope.unauthorized = false;
+        $scope.loading = true;
+        $scope.apps = false;
+        patientSearch.getOne($routeParams.pid).then(function(p){
+          $scope.loading = false;
+          $scope.apps = true;
+          $scope.patient = p;
+        });
+    } else {
+        $scope.unauthorized = true;
+        $scope.loading = false;
+        $scope.apps = false;
+    }
+    
     $scope.patientId = function(){
       return $routeParams.pid;
     };
@@ -211,7 +250,6 @@ angular.module('fhirStarter').directive('whenScrolling', function() {
   };
 });
 
-
 angular.module('fhirStarter').controller("PatientViewController", function($scope, patient, app, patientSearch, $routeParams, $rootScope, $location, fhirSettings, random, customFhirApp) {
   $scope.all_apps = [];
   app.success(function(apps){
@@ -270,9 +308,16 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
   $scope.givens = function(name) {
     return name && name.givens.join(" ");
   };
-  
-  $scope.goToPatientSelector = function() {
-    $location.url("/ui/select-patient");
-  }
 
 });
+
+angular.module('fhirStarter').controller("PatientSearchWrapper",  
+  function($scope, $routeParams, patientSearch) {
+    if ($scope.isAuthorized()) {
+        $scope.unauthorized = false;
+    } else {
+        $scope.unauthorized = true;
+    }
+  }
+);
+

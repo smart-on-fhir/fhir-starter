@@ -61,7 +61,7 @@
       #patient-search {
         padding-right: 0px;
       }
-      #settings {
+      #settings, #signin, #signout {
         float: right;
         text-decoration:underline;
       }
@@ -130,7 +130,9 @@
         <div class="navbar-inner">
           <div class="container">
             <a class="brand " href="#">SMART FHIR Starter</a>
-            <a id="settings" class="brand " ng-click="showing.settings=!showing.settings" href="">Settings</a>
+            <a id="settings" class="brand" ng-click="showing.settings=!showing.settings" href="">Settings</a>
+            <a id="signin" class="brand" ng-show="showing.signin" ng-click="signin()" href="">Sign In</a>
+            <a id="signout" class="brand" ng-show="showing.signout" ng-click="signout()" href="">Sign Out</a>
           </div>
           <div ng-include="'fhirStarter/templates/settings.html'"></div>
           <div ng-include="'fhirStarter/templates/errors.html'"></div>
@@ -159,7 +161,7 @@
     <div class="container">
       <hr>
       <footer>
-      <p>&copy; Harvard Medical School / Boston Children's Hospital, 2014</p>
+      <p>&copy; Harvard Medical School / Boston Children's Hospital, 2015</p>
       </footer>
     </div>
     <script src="bootstrap/js/bootstrap-modal.js"></script>

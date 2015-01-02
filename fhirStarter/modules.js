@@ -9,7 +9,7 @@ angular.module('fhirStarter', ['ngAnimate', 'ngRoute','ngSanitize'], function($r
     templateUrl:'fhirStarter/templates/resolve.html'
   });
 
-  $routeProvider.otherwise({redirectTo:'/ui/start'});
+  $routeProvider.otherwise({redirectTo:'/ui/select-patient'});
 
   $routeProvider.when('/ui/patient-selected/:pid', {
     templateUrl:'fhirStarter/templates/patient-selected.html',
@@ -23,14 +23,10 @@ angular.module('fhirStarter', ['ngAnimate', 'ngRoute','ngSanitize'], function($r
   });
 
   $routeProvider.when('/after-auth', {
-    templateUrl:'fhirStarter/templates/auth.html',
+    templateUrl:'fhirStarter/templates/start.html',
     controller: function(){
     
     }
-  });
-
-  $routeProvider.when('/ui/start', {
-    templateUrl:'fhirStarter/templates/start.html',
   });
 
   $locationProvider.html5Mode(false);

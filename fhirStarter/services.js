@@ -37,6 +37,10 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
     set: function(s){
       settings = s;
       localStorage.fhirSettings = JSON.stringify(settings);
+      if (settings.auth.type !== "oauth2") {
+        $rootScope.$emit('noauth-mode');
+        //$route.reload();
+      }
       $rootScope.$emit('new-settings');
     }
   }
@@ -75,7 +79,10 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
         $rootScope.$emit('error', err);
         $rootScope.$emit('set-loading');
         $rootScope.$emit('clear-client');
-        $location.url("/ui/start");
+        var loc = "/ui/select-patient";
+        if ($location.url() !== loc) {
+            $location.url(loc);
+        }
         $rootScope.$digest();
       });
     }
@@ -106,56 +113,59 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
           "type": "oauth2"
         }
       });
-    } else if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2'){
-      console.log ("case 2");
+    } else if (fhirSettings.get().auth && fhirSettings.get().auth.type === 'oauth2'){
       oauth2.authorize(fhirSettings.get());
     } else {
-      console.log ("case 3");
       smart = new FHIR.client(fhirSettings.get());
       $rootScope.$emit('new-client');
     }
   }
   
-   function onNewClient(){
-      if (smart && smart.state && smart.state.from !== undefined){
+  function onNewClient(){
+    if (smart && smart.state && smart.state.from !== undefined){
         console.log(smart, 'back from', smart.state.from);
-        var to = smart.state.from;
-        if (to === "/ui/authorize" || to === "/ui/start") to = "/ui/select-patient";
-        $location.url(to);
+        $rootScope.$emit('signed-in');
+        $location.url(smart.state.from);
         $rootScope.$digest();
-      } else {
-        if ($location.url() === "/ui/authorize") $location.url("/ui/select-patient");
-      }
-   }
+    }
+  }
 
   $rootScope.$on('$routeChangeSuccess', function (scope, next, current) {
     console.log('route changed', scope, next, current);
     console.log('so params', $routeParams);
 
-    function endsWith(str, suffix) {
-        return str.indexOf(suffix, str.length - suffix.length) !== -1;
-    }
-
-    if (current === undefined && !endsWith($location.path(), "start")) {
-        console.log ("get new client on routeChange");
-        getClient();
-    } else {
+    if (current === undefined) {
+        //getClient();
     }
   });
   
   $rootScope.$on('reconnect-request', function(){
-      if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2') getClient();
-  })
+      if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2') {
+         smart = null;
+         localStorage.clear();
+         getClient();
+      }
+  });
   
   $rootScope.$on('clear-client', function(){
       smart = null;
+      localStorage.clear();
   })
 
   $rootScope.$on('new-client', onNewClient);
+  
+  $rootScope.$on('init-client', function(e){
+    getClient();
+  });
 
   $rootScope.$on('new-settings', function(e){
+<<<<<<< HEAD
     sessionStorage.clear();
     getClient();
+=======
+    getClient();
+    $location.url("/ui/select-patient");
+>>>>>>> Explicit auth control using signin/signout
     $route.reload();
   });
 
@@ -287,8 +297,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   };
 });
 
-angular.module('fhirStarter').factory('random', function($route, $routeParams, $location, $window, $rootScope, $q) {
-    console.log('initialzing random service');
+angular.module('fhirStarter').factory('random', function() {
   var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   return function randomString(length) {
     var result = '';
