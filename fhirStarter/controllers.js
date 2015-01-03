@@ -69,23 +69,25 @@ angular.module('fhirStarter').controller("SettingsController",
   function($scope, $rootScope, $route, $routeParams, $location, fhirSettings){
 
     $scope.existing = { };
-    $scope.settings = { };
+    $scope.serviceUrl = "";
 
     $scope.servers = fhirSettings.servers.map(function(server){
       return {
-        value: JSON.stringify(server, null, 2),
+        value: server.serviceUrl,
         title: server.name
       }
     });
 
     $scope.save = function(){
-      var newSettings = JSON.parse($scope.settings);
+      var newSettings = {
+         serviceUrl: $scope.serviceUrl
+      };
       fhirSettings.set(newSettings);
       $scope.showing.settings = false;
-    }
+    };
     
     fhirSettings.get( function (settings) {
-        JSON.stringify(settings,null,2);
+        $scope.serviceUrl = settings.serviceUrl;
     });
   }
 );

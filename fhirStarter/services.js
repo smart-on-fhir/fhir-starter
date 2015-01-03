@@ -44,9 +44,9 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
             decorateWithType (settings, callback);
         }
     },
-    set: function(settings){
-        decorateWithType (settings, function (settings) {
-
+    set: function(s){
+        decorateWithType (s, function (st) {
+            settings = st;
             localStorage.fhirSettings = JSON.stringify(settings);
 
             if (settings.auth.type !== "oauth2") {

@@ -5,13 +5,14 @@
   <div class="span8">
     <select 
       ng-model="existing.server" 
-      ng-change="settings = existing.server"
+      ng-change="serviceUrl = existing.server"
       ng-options="s.value as s.title for s in servers">
     </select>
   </div>
 
+  <div class="span8">Service URL</div>
   <div class="span8">
-    <textarea ng-model="settings"></textarea>
+    <input type="text" ng-model="serviceUrl" />
   </div>
 
   <div class="span8">
