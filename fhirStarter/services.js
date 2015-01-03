@@ -2,57 +2,60 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
 
   var servers = [
     {
-      name: 'Local FHIR dev server, oauth2',
-      serviceUrl: 'http://localhost:9080',
-      auth: {
-        type: 'oauth2',
-      }
+      name: 'Local FHIR dev server',
+      serviceUrl: 'http://localhost:9080'
+    }, {
+      name: "SMART on FHIR (smartplatforms.org), no auth",
+      serviceUrl: "https://fhir-open-api.smartplatforms.org"
     }, {
       name: 'Health Intersections Server (Grahame)',
-      serviceUrl: 'http://fhir.healthintersections.com.au/open',
-      auth: {
-        type: 'none'
-      }
+      serviceUrl: 'http://fhir.healthintersections.com.au/open'
     }, {
       name: 'Furore Server (Ewout)',
-      serviceUrl: 'http://spark.furore.com/fhir',
-      auth: {
-        type: 'none'
-      }
-    }, {
-      name: 'Local FHIR dev server, no auth',
-      serviceUrl: 'http://localhost:9080',
-      auth: {
-        type: 'none'
-      }
+      serviceUrl: 'http://spark.furore.com/fhir'
     }
   ];
+  
+  function decorateWithType (settings, callback) {
+    FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
+      
+        // override the security type with the one resolved via introspection
+        // of the conformance statement
+        settings.auth = {
+            type: type
+        };
+
+        callback (settings);
+
+    }, function (err) {
+        $rootScope.$emit('error', err);
+    });
+  }
 
   var settings = localStorage.fhirSettings ? 
   JSON.parse(localStorage.fhirSettings) : servers[0];
 
   return {
     servers: servers,
-    get: function(){return settings;},
-    set: function(settings){
-      FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
-      
-        // override the security type with the one resolved via introspection
-        // of the conformance statement
-        settings.auth.type = type;
-
-        localStorage.fhirSettings = JSON.stringify(settings);
-
-        if (settings.auth.type !== "oauth2") {
-            $rootScope.$emit('noauth-mode');
-            //$route.reload();
+    get: function(callback){
+        if (settings.auth && settings.auth.type) {
+            callback (settings);
+        } else {
+            decorateWithType (settings, callback);
         }
+    },
+    set: function(settings){
+        decorateWithType (settings, function (settings) {
 
-        $rootScope.$emit('new-settings');
-        
-      }, function (err) {
-        $rootScope.$emit('error', err);
-      });
+            localStorage.fhirSettings = JSON.stringify(settings);
+
+            if (settings.auth.type !== "oauth2") {
+                $rootScope.$emit('noauth-mode');
+                //$route.reload();
+            }
+
+            $rootScope.$emit('new-settings');
+        });
     }
   }
 
@@ -108,28 +111,30 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   var didOauth = false;
 
   function getClient(){
-    if ($routeParams.code){
-      delete sessionStorage.tokenResponse;
-      FHIR.oauth2.ready($routeParams, function(smartNew){
-        smart = smartNew;
-        window.smart = smart;
-        didOauth = true;
-        $rootScope.$emit('new-client');
-      });
-    } else if (!didOauth && $routeParams.iss){
-      oauth2.authorize({
-        "name": "OAuth server issuing launch context request",
-        "serviceUrl": decodeURIComponent($routeParams.iss),
-        "auth": {
-          "type": "oauth2"
+    fhirSettings.get (function(settings) {
+        if ($routeParams.code){
+          delete sessionStorage.tokenResponse;
+          FHIR.oauth2.ready($routeParams, function(smartNew){
+            smart = smartNew;
+            window.smart = smart;
+            didOauth = true;
+            $rootScope.$emit('new-client');
+          });
+        } else if (!didOauth && $routeParams.iss){
+          oauth2.authorize({
+            "name": "OAuth server issuing launch context request",
+            "serviceUrl": decodeURIComponent($routeParams.iss),
+            "auth": {
+              "type": "oauth2"
+            }
+          });
+        } else if (settings.auth && settings.auth.type === 'oauth2'){
+          oauth2.authorize(settings);
+        } else {
+          smart = new FHIR.client(settings);
+          $rootScope.$emit('new-client');
         }
-      });
-    } else if (fhirSettings.get().auth && fhirSettings.get().auth.type === 'oauth2'){
-      oauth2.authorize(fhirSettings.get());
-    } else {
-      smart = new FHIR.client(fhirSettings.get());
-      $rootScope.$emit('new-client');
-    }
+    });
   }
   
   function onNewClient(){
@@ -151,11 +156,13 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   });
   
   $rootScope.$on('reconnect-request', function(){
-      if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2') {
-         smart = null;
-         localStorage.clear();
-         getClient();
-      }
+        fhirSettings.get (function(settings) {
+            if (settings.auth && settings.auth.type == 'oauth2') {
+                smart = null;
+                localStorage.clear();
+                getClient();
+            }
+        });
   });
   
   $rootScope.$on('clear-client', function(){

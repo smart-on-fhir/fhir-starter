@@ -6,11 +6,13 @@ angular.module('fhirStarter').controller("MainController",
       signout: false
     };
     
-    if (fhirSettings.get().auth.type !== 'oauth2') {
-        $scope.showing.signin = false;
-        $scope.showing.signout = false;
-        patientSearch.getClient();
-    }
+    fhirSettings.get (function (settings) {
+        if (settings.auth.type !== 'oauth2') {
+            $scope.showing.signin = false;
+            $scope.showing.signout = false;
+            patientSearch.getClient();
+        }
+    });
     
     $scope.signin = function(){
         $rootScope.$emit('reconnect-request');
@@ -21,14 +23,6 @@ angular.module('fhirStarter').controller("MainController",
         $scope.showing.signout = false;
         $rootScope.$emit('clear-client');
         $route.reload();
-    }
-    
-    $scope.isAuthorized = function(){
-        if (patientSearch.smart() || fhirSettings.get().auth.type !== 'oauth2') {
-            return true;
-        } else {
-            return false;
-        }
     }
     
     $rootScope.$on('signed-in', function(){
@@ -74,8 +68,9 @@ angular.module('fhirStarter').controller("ErrorsController",
 angular.module('fhirStarter').controller("SettingsController", 
   function($scope, $rootScope, $route, $routeParams, $location, fhirSettings){
 
-    $scope.existing = { }
-    $scope.settings = JSON.stringify(fhirSettings.get(),null,2);
+    $scope.existing = { };
+    $scope.settings = { };
+
     $scope.servers = fhirSettings.servers.map(function(server){
       return {
         value: JSON.stringify(server, null, 2),
@@ -88,25 +83,32 @@ angular.module('fhirStarter').controller("SettingsController",
       fhirSettings.set(newSettings);
       $scope.showing.settings = false;
     }
+    
+    fhirSettings.get( function (settings) {
+        JSON.stringify(settings,null,2);
+    });
   }
 );
 
 angular.module('fhirStarter').controller("PatientViewWrapper",  
   function($scope, $routeParams, patientSearch) {
-    if ($scope.isAuthorized()) {
-        $scope.unauthorized = false;
-        $scope.loading = true;
-        $scope.apps = false;
-        patientSearch.getOne($routeParams.pid).then(function(p){
-          $scope.loading = false;
-          $scope.apps = true;
-          $scope.patient = p;
-        });
-    } else {
-        $scope.unauthorized = true;
-        $scope.loading = false;
-        $scope.apps = false;
-    }
+  
+    fhirSettings.get (function (settings) {
+        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+            $scope.unauthorized = false;
+            $scope.loading = true;
+            $scope.apps = false;
+            patientSearch.getOne($routeParams.pid).then(function(p){
+              $scope.loading = false;
+              $scope.apps = true;
+              $scope.patient = p;
+            });
+        } else {
+            $scope.unauthorized = true;
+            $scope.loading = false;
+            $scope.apps = false;
+        }
+    });
     
     $scope.patientId = function(){
       return $routeParams.pid;
@@ -256,68 +258,70 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
     $scope.all_apps = apps;
   });
   $scope.patientHelper = patient;
-  
-  var settings = fhirSettings.get();
-  $scope.fhirServiceUrl = settings.serviceUrl;
-  $scope.fhirAuthType = settings.auth.type;
 
-  if ($scope.fhirAuthType === "none") {
-       $scope.launch = function launch(app){
+  fhirSettings.get( function(settings) {
+      $scope.fhirServiceUrl = settings.serviceUrl;
+      $scope.fhirAuthType = settings.auth.type;
 
-        /* Hack to get around the window popup behavior in modern web browsers
-        (The window.open needs to be synchronous with the click even to
-        avoid triggering  popup blockers. */
+      if ($scope.fhirAuthType === "none") {
+           $scope.launch = function launch(app){
 
-        window.open(app.launch_uri+'?fhirServiceUrl='+$scope.fhirServiceUrl+"&patientId="+$routeParams.pid, '_blank');
+            /* Hack to get around the window popup behavior in modern web browsers
+            (The window.open needs to be synchronous with the click even to
+            avoid triggering  popup blockers. */
 
+            window.open(app.launch_uri+'?fhirServiceUrl='+$scope.fhirServiceUrl+"&patientId="+$routeParams.pid, '_blank');
+
+          };
+      } else {
+          $scope.launch = function launch(app){
+
+            /* Hack to get around the window popup behavior in modern web browsers
+            (The window.open needs to be synchronous with the click even to
+            avoid triggering  popup blockers. */
+
+            var key = random(32);
+            window.localStorage[key] = "requested-launch";
+            window.open('launch.html?'+key, '_blank');
+
+            patientSearch
+            .registerContext(app, {patient: $routeParams.pid})
+            .then(function(c){
+              console.log(patientSearch.smart());
+              window.localStorage[key] = JSON.stringify({
+                app: app,
+                iss: patientSearch.smart().server.serviceUrl,
+                context: c
+              });
+            });
+          };
       }
-  } else {
-      $scope.launch = function launch(app){
 
-        /* Hack to get around the window popup behavior in modern web browsers
-        (The window.open needs to be synchronous with the click even to
-        avoid triggering  popup blockers. */
-
-        var key = random(32);
-        window.localStorage[key] = "requested-launch";
-        window.open('launch.html?'+key, '_blank');
-
-        patientSearch
-        .registerContext(app, {patient: $routeParams.pid})
-        .then(function(c){
-          console.log(patientSearch.smart());
-          window.localStorage[key] = JSON.stringify({
-            app: app,
-            iss: patientSearch.smart().server.serviceUrl,
-            context: c
-          });
+      $scope.customapp = customFhirApp.get();
+      
+      $scope.launchCustom = function launchCustom(){
+        customFhirApp.set($scope.customapp);
+        $scope.launch({
+            client_id: $scope.customapp.id,
+            launch_uri: $scope.customapp.url
         });
-      }
-  }
+      };
 
-  $scope.customapp = customFhirApp.get();
-  
-  $scope.launchCustom = function launchCustom(){
-    customFhirApp.set($scope.customapp);
-    $scope.launch({
-        client_id: $scope.customapp.id,
-        launch_uri: $scope.customapp.url
-    });
-  }
-
-  $scope.givens = function(name) {
-    return name && name.givens.join(" ");
-  };
-
+      $scope.givens = function(name) {
+        return name && name.givens.join(" ");
+      };
+  });
 });
 
 angular.module('fhirStarter').controller("PatientSearchWrapper",  
-  function($scope, $routeParams, patientSearch) {
-    if ($scope.isAuthorized()) {
-        $scope.unauthorized = false;
-    } else {
-        $scope.unauthorized = true;
-    }
+  function($scope, $routeParams, patientSearch, fhirSettings) {
+    fhirSettings.get (function (settings) {
+        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+            $scope.unauthorized = false;
+        } else {
+            $scope.unauthorized = true;
+        }
+    });
   }
 );
 
