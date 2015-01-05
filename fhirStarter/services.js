@@ -168,6 +168,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   $rootScope.$on('clear-client', function(){
       smart = null;
       localStorage.clear();
+      sessionStorage.clear();
   })
 
   $rootScope.$on('new-client', onNewClient);

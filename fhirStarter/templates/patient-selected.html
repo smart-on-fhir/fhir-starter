@@ -1,6 +1,6 @@
 ﻿<div ng-controller="PatientViewWrapper">
   <div ng-controller="PatientViewController">
-    <h1 ng-show="unauthorized">Please sign in above to get started</h1>
+    <h3 ng-show="unauthorized" class="centered">Please sign in above to get started</h3>
     <h1 ng-show="loading">Loading...</h1>
     <h1 ng-show="apps" class="pull-right"><div class="step-bubble"><span>2</span></div>App time <small>for {{patientHelper.name(patient)}}</small></h1>
     <br style="clear: both;" />

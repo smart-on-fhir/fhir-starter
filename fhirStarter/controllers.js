@@ -93,7 +93,7 @@ angular.module('fhirStarter').controller("SettingsController",
 );
 
 angular.module('fhirStarter').controller("PatientViewWrapper",  
-  function($scope, $routeParams, patientSearch) {
+  function($scope, $routeParams, patientSearch, fhirSettings) {
   
     fhirSettings.get (function (settings) {
         if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
@@ -105,10 +105,14 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
               $scope.apps = true;
               $scope.patient = p;
             });
-        } else {
-            $scope.unauthorized = true;
-            $scope.loading = false;
-            $scope.apps = false;
+        } else {          
+            if (sessionStorage.tokenResponse) {
+                $scope.signin();
+            } else {
+                $scope.unauthorized = true;
+                $scope.loading = false;
+                $scope.apps = false;
+            }
         }
     });
     
@@ -321,7 +325,11 @@ angular.module('fhirStarter').controller("PatientSearchWrapper",
         if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
             $scope.unauthorized = false;
         } else {
-            $scope.unauthorized = true;
+            if (sessionStorage.tokenResponse) {
+                $scope.signin();
+            } else {
+                $scope.unauthorized = true;
+            }
         }
     });
   }
