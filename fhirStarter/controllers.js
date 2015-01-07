@@ -123,8 +123,19 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
 );
 
 angular.module('fhirStarter').controller("BindContextController",  
-  function($scope, patient, patientSearch, $routeParams, $rootScope, $location, oauth2) {
+  function($scope, patient, patientSearch, $routeParams, $rootScope, $location, oauth2, fhirSettings) {
 
+    $scope.showing.signin = false;
+    $scope.showing.signout = false;
+    
+    fhirSettings.get (function (settings) {
+        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+            $scope.unauthorized = false;
+        } else {
+            $scope.signin();
+        }
+    });
+  
     $scope.clientName = decodeURIComponent($routeParams.clientName)
     .replace(/\+/, " ");
 
