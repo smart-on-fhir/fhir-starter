@@ -178,13 +178,9 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   });
 
   $rootScope.$on('new-settings', function(e){
-<<<<<<< HEAD
     sessionStorage.clear();
     getClient();
-=======
-    getClient();
     $location.url("/ui/select-patient");
->>>>>>> Explicit auth control using signin/signout
     $route.reload();
   });
 
