@@ -1,6 +1,6 @@
 ﻿<div ng-controller="PatientSearchWrapper">
   <h3 ng-show="unauthorized" class="centered">Please sign in above to get started</h3>
-  <h1 ng-hide="unauthorized"><div class="step-bubble"><span>1</span></div>Choose a patient</small></h1>
+  <h1 ng-hide="unauthorized" class="ng-hide"><div class="step-bubble"><span>1</span></div>Choose a patient</small></h1>
 
   <div id="patient-results" ng-include="'fhirStarter/templates/patient-search.html'">
   </div>
