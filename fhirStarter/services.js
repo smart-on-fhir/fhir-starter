@@ -352,6 +352,38 @@ angular.module('fhirStarter').factory('customFhirApp', function() {
     set: function(app){
       localStorage.customFhirApp = JSON.stringify(app);
     }
-  }
+  };
+
+});
+
+angular.module('fhirStarter').factory('tools', function() {
+
+
+  return {
+    decodeURLParam: function (url, param) {
+        var query;
+        var data;
+        var result = [];
+        
+        try {
+            query = decodeURIComponent(url).split("?")[1];
+            data = query.split("&");
+        } catch (err) {
+            return null;
+        }
+
+        for(var i=0; i<data.length; i++) {
+            var item = data[i].split("=");
+            if (item[0] === param) {
+              result.push(item[1]);
+            }
+        }
+
+        if (result.length === 0){
+            return null;
+        }
+        return result[0];
+    }
+  };
 
 });

@@ -123,7 +123,7 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
 );
 
 angular.module('fhirStarter').controller("BindContextController",  
-  function($scope, patient, patientSearch, $routeParams, $rootScope, $location, oauth2, fhirSettings) {
+  function($scope, patient, patientSearch, $routeParams, $rootScope, $location, oauth2, fhirSettings, tools) {
 
     $scope.showing.signin = false;
     $scope.showing.signout = false;
@@ -141,9 +141,10 @@ angular.module('fhirStarter').controller("BindContextController",
 
     $scope.onSelected = $scope.onSelected || function(p){
       var pid = patient.id(p).id;
-
+      var client_id = tools.decodeURLParam($routeParams.endpoint, "client_id");
+      
       patientSearch
-      .registerContext({ client_id:'cardiac_risk'}, {patient: pid})
+      .registerContext({ client_id: client_id}, {patient: pid})
       .then(function(c){
         var to = decodeURIComponent($routeParams.endpoint);
         to = to.replace(/scope=/, "scope=launch:"+c.launch_id+"+");
