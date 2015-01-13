@@ -1,4 +1,4 @@
-angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth2) {
+angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth2, $q) {
 
   var servers = [
     {
@@ -16,20 +16,23 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
     }
   ];
   
-  function decorateWithType (settings, callback) {
-    FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
-      
-        // override the security type with the one resolved via introspection
-        // of the conformance statement
-        settings.auth = {
-            type: type
-        };
+  function decorateWithType (settings) {
+    var deferred = $q.defer();
+        FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
+          
+            // override the security type with the one resolved via introspection
+            // of the conformance statement
+            settings.auth = {
+                type: type
+            };
 
-        callback (settings);
+            deferred.resolve (settings);
 
-    }, function (err) {
-        $rootScope.$emit('error', err);
-    });
+        }, function (err) {
+            $rootScope.$emit('error', err);
+            deferred.reject('Error resolving service type');
+        });
+    return deferred.promise;
   }
 
   var settings = localStorage.fhirSettings ? 
@@ -37,15 +40,17 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
 
   return {
     servers: servers,
-    get: function(callback){
-        if (settings.auth && settings.auth.type) {
-            callback (settings);
-        } else {
-            decorateWithType (settings, callback);
-        }
+    get: function() {
+        var deferred = $q.defer();
+            if (settings.auth && settings.auth.type) {
+                deferred.resolve (settings);
+            } else {
+                decorateWithType(settings).then(deferred.resolve, deferred.reject);
+            }
+        return deferred.promise;
     },
     set: function(s){
-        decorateWithType (s, function (st) {
+        decorateWithType(s).then(function (st) {
             settings = st;
             localStorage.fhirSettings = JSON.stringify(settings);
 
@@ -111,7 +116,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   var didOauth = false;
 
   function getClient(){
-    fhirSettings.get (function(settings) {
+    fhirSettings.get().then(function(settings) {
         if ($routeParams.code){
           delete sessionStorage.tokenResponse;
           FHIR.oauth2.ready($routeParams, function(smartNew){
@@ -156,7 +161,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   });
   
   $rootScope.$on('reconnect-request', function(){
-        fhirSettings.get (function(settings) {
+        fhirSettings.get().then(function(settings) {
             if (settings.auth && settings.auth.type == 'oauth2') {
                 smart = null;
                 localStorage.clear();

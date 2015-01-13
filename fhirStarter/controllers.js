@@ -6,7 +6,7 @@ angular.module('fhirStarter').controller("MainController",
       signout: false
     };
     
-    fhirSettings.get (function (settings) {
+    fhirSettings.get().then(function (settings) {
         if (settings.auth.type !== 'oauth2') {
             $scope.showing.signin = false;
             $scope.showing.signout = false;
@@ -86,7 +86,7 @@ angular.module('fhirStarter').controller("SettingsController",
       $scope.showing.settings = false;
     };
     
-    fhirSettings.get( function (settings) {
+    fhirSettings.get().then( function (settings) {
         $scope.serviceUrl = settings.serviceUrl;
     });
   }
@@ -95,7 +95,7 @@ angular.module('fhirStarter').controller("SettingsController",
 angular.module('fhirStarter').controller("PatientViewWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
   
-    fhirSettings.get (function (settings) {
+    fhirSettings.get().then(function (settings) {
         if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
             $scope.unauthorized = false;
             $scope.loading = true;
@@ -128,7 +128,7 @@ angular.module('fhirStarter').controller("BindContextController",
     $scope.showing.signin = false;
     $scope.showing.signout = false;
     
-    fhirSettings.get (function (settings) {
+    fhirSettings.get().then(function (settings) {
         if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
             $scope.unauthorized = false;
         } else {
@@ -277,7 +277,7 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
   });
   $scope.patientHelper = patient;
 
-  fhirSettings.get( function(settings) {
+  fhirSettings.get().then( function(settings) {
       $scope.fhirServiceUrl = settings.serviceUrl;
       $scope.fhirAuthType = settings.auth.type;
 
@@ -333,7 +333,7 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
 
 angular.module('fhirStarter').controller("PatientSearchWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
-    fhirSettings.get (function (settings) {
+    fhirSettings.get().then(function (settings) {
         if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
             $scope.unauthorized = false;
         } else {
