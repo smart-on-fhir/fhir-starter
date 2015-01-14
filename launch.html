@@ -23,8 +23,8 @@
         delete sessionStorage.tokenResponse;
         
         window.location = details.app.launch_uri + 
-        '?iss=' + details.iss + 
-        '&launch=' + details.context.launch_id;
+        '?iss=' + encodeURIComponent(details.iss) + 
+        '&launch=' + encodeURIComponent(details.context.launch_id);
       }
     </script>
   </head>
