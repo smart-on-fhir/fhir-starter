@@ -204,7 +204,7 @@ angular.module('fhirStarter').controller("ErrorsController",
                 (The window.open needs to be synchronous with the click even to
                 avoid triggering  popup blockers. */
 
-                window.open(app.launch_uri+'?fhirServiceUrl='+$scope.fhirServiceUrl+"&patientId="+$routeParams.pid, '_blank');
+                window.open(app.launch_uri+'?fhirServiceUrl='+encodeURIComponent($scope.fhirServiceUrl)+"&patientId="+$routeParams.pid, '_blank');
 
               }
           } else {
@@ -224,7 +224,7 @@ angular.module('fhirStarter').controller("ErrorsController",
                   console.log(patientSearch.smart());
                   window.localStorage[key] = JSON.stringify({
                     app: app,
-                    iss: patientSearch.smart().server.serviceUrl,
+                    iss:  encodeURIComponent(patientSearch.smart().server.serviceUrl),
                     context: c
                   });
                 });
