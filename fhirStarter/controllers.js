@@ -216,7 +216,7 @@ angular.module('fhirStarter').controller("ErrorsController",
 
                 var key = random(32);
                 window.localStorage[key] = "requested-launch";
-                window.open('launch.html?'+key, '_blank');
+                var appWindow = window.open('launch.html?'+key, '_blank');
 
                 patientSearch
                 .registerContext(app, {patient: $routeParams.pid})
@@ -229,6 +229,7 @@ angular.module('fhirStarter').controller("ErrorsController",
                   });
                 }, function(err){
                   console.log("Could not register launch context: ", err);
+                  appWindow.close();
                   $rootScope.$emit('reconnect-request');
                   $rootScope.$emit('error', 'Could not register launch context (see console)');
                   $rootScope.$digest();
