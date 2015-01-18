@@ -227,6 +227,11 @@ angular.module('fhirStarter').controller("ErrorsController",
                     iss:  patientSearch.smart().server.serviceUrl,
                     context: c
                   });
+                }, function(err){
+                  console.log("Could not register launch context: ", err);
+                  $rootScope.$emit('reconnect-request');
+                  $rootScope.$emit('error', 'Could not register launch context (see console)');
+                  $rootScope.$digest();
                 });
               }
           }
