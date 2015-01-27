@@ -1,0 +1,142 @@
+/*
+  SMArt UI Server CSS
+  Arjun Sanyal (arjun.sanyal@childrens.harvard.edu)
+  Loosely based on the Indivo UI server's CSS
+*/
+
+/*** colors ***/
+/*
+  body text:    #555
+  background:   #fcfcfc
+  light blue:   #0088cc
+  dark blue:    #004488
+  red:          #880000
+  green:        #008800
+  light green:  #00cc88
+*/
+
+/* use Lucida grande with slight neg letter spacing for text */
+p {
+  font-family: "Lucida Grande", Calibri, "Helvetica Neue", Helvetica, Tahoma, Verdana, sans-serif;
+  letter-spacing: -0.1px;
+}
+
+.alert_header {font-weight: bold;}
+
+em { font-weight: inherit; }
+
+/* set a standard length for all input types */
+input[type="email"] { width: 12.25em; }
+
+/* links */
+a { color: #0088CC; text-decoration: none; font-size: 0.9em; }
+a:hover { color: #0088CC; border-bottom: 1px solid #0088CC; }
+
+/* heading heirarchy based on weights a 24px line height */
+/*
+h1 { font-size: 36px; margin: 8px  0 0   0; font-weight: 300; color: #666; letter-spacing: -1.75px; }
+h2 { font-size: 28px; margin: 16px 0 4px 0; font-weight: 300; color: #666; }
+h3 { font-size: 20px; margin: 4px  0 0   0; font-weight: 400; color: #555; letter-spacing: -1px}
+h4 { font-size: 16px; margin: 8px  0 0   0; font-weight: 700; color: #555;}
+h5 { font-size: 14px; margin: 9px  0 0   0; font-weight: 700; color: #555; text-transform: uppercase;}
+*/
+
+/* lists */
+li img { height: 32px; width: 32px; }
+
+
+table.light thead th { 
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+table.light tfoot td {
+  border: none;
+  text-align: right;
+  font-weight: normal;
+  color: #999;
+  font-style: italic;
+  font-size: .85em;
+}
+table.light tbody td:first-child { border-left:none; }
+table.light tbody td:last-child { border-right:none; }
+tr.odd { background: #fff; }
+tr.unread { font-weight: bold; }
+
+    #header, #footer { 
+	display: block; width: 100%; background: #dddddd; padding: 10px;
+        box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;
+	z-index: 1;
+}
+
+
+
+    #header {
+      position: fixed; top: 0px; left: 0px; 
+      border-bottom: 10px solid #aaa;
+    }
+    #footer {
+      position: static; bottom: 0px; left: 0px;
+      margin-top: -45px;
+      height: 45px;
+      border-top: 10px solid #aaa;
+    }
+
+    #patient-list {  background: white; border: 1px solid black; font-weight: bold;  padding: .6em;}
+    button {  background: white; border: 1px solid black; font-weight: bold;  padding: .6em; }
+
+    body {
+      color: #444;
+      font: .8em/145% calibri, sans-serif;
+
+    }
+
+    #non-footer {
+      min-height: 100%;
+    }
+    
+    #header .message { 
+      font-size: 200%;
+      font-weight: bold; 
+      vertical-align: middle;  
+      position: absolute;
+      top: 50%;
+      margin-top: -0.5em;
+      margin-left: 1em;
+    } 
+
+    #showcase-content{ 
+    width: 100%;
+    margin-left: auto; margin-right: auto;
+    box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; 
+    padding-top: 74px;
+    padding-bottom: 45px;
+}
+
+    #appnav { 
+    box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; 
+    height: 100%;
+    width: 800px;
+    margin-left: 2em;
+
+}
+
+    iframe {
+      border: 0px; 
+      width: 100%;
+      height: 100%;
+    }
+
+    html, body {height: 100%; margin: 0px;}
+
+    #app_accordion {width: 100%; margin-bottom: 1em; margin-top: 1em;}
+    #app_content_iframe_holder {display: none; height: 100%;}
+    #patient-list {display: none;
+		  float: right;
+		  margin-right: 1em;}
+    #back-to-showcase {display: none; float: right;}
+    #loading_div {position: absolute; top: 75px; left: 0px; z-index: 10;}
