@@ -6,11 +6,11 @@ angular.module('fhirStarter').controller("MainController",
       signout: false
     };
     
-    fhirSettings.get().then(function (settings) {
-        if (settings.auth.type !== 'oauth2') {
+    fhirSettings.get().then(function () {
+        if (!fhirSettings.authServiceRequired()) {
             $scope.showing.signin = false;
             $scope.showing.signout = false;
-            patientSearch.getClient();
+            patientSearch.initClient();
         }
     });
     
@@ -95,8 +95,8 @@ angular.module('fhirStarter').controller("SettingsController",
 angular.module('fhirStarter').controller("PatientViewWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
   
-    fhirSettings.get().then(function (settings) {
-        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+    fhirSettings.get().then(function () {
+        if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             $scope.unauthorized = false;
             $scope.loading = true;
             $scope.apps = false;
@@ -107,6 +107,7 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
             });
         } else {          
             if (sessionStorage.tokenResponse) {
+                // access token is available, so sign in now
                 $scope.signin();
             } else {
                 $scope.unauthorized = true;
@@ -125,13 +126,16 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
 angular.module('fhirStarter').controller("BindContextController",  
   function($scope, patient, patientSearch, $routeParams, $rootScope, $location, oauth2, fhirSettings, tools) {
 
+    // hide the signin/signout buttons
     $scope.showing.signin = false;
     $scope.showing.signout = false;
     
-    fhirSettings.get().then(function (settings) {
-        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+    fhirSettings.get().then(function () {
+        if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
+            // all is good
             $scope.unauthorized = false;
         } else {
+            // need to complete auuthorization cycle
             $scope.signin();
         }
     });
@@ -277,7 +281,7 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
   });
   $scope.patientHelper = patient;
 
-  fhirSettings.get().then( function(settings) {
+  fhirSettings.get().then( function() {
       $scope.fhirServiceUrl = settings.serviceUrl;
       $scope.fhirAuthType = settings.auth.type;
 
@@ -333,11 +337,12 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
 
 angular.module('fhirStarter').controller("PatientSearchWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
-    fhirSettings.get().then(function (settings) {
-        if (patientSearch.smart() || settings.auth.type !== 'oauth2') {
+    fhirSettings.get().then(function () {
+        if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             $scope.unauthorized = false;
         } else {
             if (sessionStorage.tokenResponse) {
+                // access token is available, so sign-in now
                 $scope.signin();
             } else {
                 $scope.unauthorized = true;

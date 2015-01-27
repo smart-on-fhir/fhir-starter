@@ -17,21 +17,24 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
   ];
   
   function decorateWithType (settings) {
+  
     var deferred = $q.defer();
-        FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
-          
-            // override the security type with the one resolved via introspection
-            // of the conformance statement
-            settings.auth = {
-                type: type
-            };
+    
+    FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
+      
+        // override the security type with the one resolved via introspection
+        // of the conformance statement
+        settings.auth = {
+            type: type
+        };
 
-            deferred.resolve (settings);
+        deferred.resolve (settings);
 
-        }, function (err) {
-            $rootScope.$emit('error', err);
-            deferred.reject('Error resolving service type');
-        });
+    }, function (err) {
+        $rootScope.$emit('error', err);
+        deferred.reject('Error resolving service type');
+    });
+    
     return deferred.promise;
   }
 
@@ -61,6 +64,9 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
 
             $rootScope.$emit('new-settings');
         });
+    },
+    authServiceRequired: function () {
+        return settings.auth.type === 'oauth2';
     }
   }
 
@@ -112,10 +118,10 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
 angular.module('fhirStarter').factory('patientSearch', function($route, $routeParams, $location, $window, $rootScope, $q, fhirSettings, oauth2) {
 
   console.log('initialzing pt search service');
-  var smart;
+  var smart = null;
   var didOauth = false;
 
-  function getClient(){
+  function initClient(){
     fhirSettings.get().then(function(settings) {
         if ($routeParams.code){
           delete sessionStorage.tokenResponse;
@@ -156,7 +162,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
     console.log('so params', $routeParams);
 
     if (current === undefined) {
-        //getClient();
+        //initClient();
     }
   });
   
@@ -165,7 +171,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
             if (settings.auth && settings.auth.type == 'oauth2') {
                 smart = null;
                 localStorage.clear();
-                getClient();
+                initClient();
             }
         });
   });
@@ -179,12 +185,12 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   $rootScope.$on('new-client', onNewClient);
   
   $rootScope.$on('init-client', function(e){
-    getClient();
+    initClient();
   });
 
   $rootScope.$on('new-settings', function(e){
     sessionStorage.clear();
-    getClient();
+    initClient();
     $location.url("/ui/select-patient");
     $route.reload();
   });
@@ -313,7 +319,10 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
     smart: function(){
       return smart;
     },
-    getClient: getClient
+    connected: function(){
+      return smart !== null;
+    },
+    initClient: initClient
   };
 });
 
@@ -363,7 +372,6 @@ angular.module('fhirStarter').factory('customFhirApp', function() {
 
 angular.module('fhirStarter').factory('tools', function() {
 
-
   return {
     decodeURLParam: function (url, param) {
         var query;
@@ -388,6 +396,37 @@ angular.module('fhirStarter').factory('tools', function() {
             return null;
         }
         return result[0];
+    }
+  };
+
+});
+
+
+angular.module('fhirStarter').factory('initializer', function(patientSearch, fhirSettings, $q) {
+  var type;
+
+  return {
+    launch: function () {
+        var deferred = $q.defer();
+        
+        fhirSettings.get().then(function (settings) {
+            type = settings.auth.type;
+            if (patientSearch.smart() || type !== 'oauth2') {
+                deferred.resolve("authorized");
+            } else {
+                if (sessionStorage.tokenResponse) {
+                    //execute sign in except when we are in bindController
+                }
+                deferred.resolve("unauthorized");
+            }
+        });
+
+        return deferred.promise;
+    },
+    getType: function () {
+        return type;
+    },
+    showControls: function () {
     }
   };
 
