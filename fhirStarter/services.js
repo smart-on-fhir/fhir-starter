@@ -400,34 +400,3 @@ angular.module('fhirStarter').factory('tools', function() {
   };
 
 });
-
-
-angular.module('fhirStarter').factory('initializer', function(patientSearch, fhirSettings, $q) {
-  var type;
-
-  return {
-    launch: function () {
-        var deferred = $q.defer();
-        
-        fhirSettings.get().then(function (settings) {
-            type = settings.auth.type;
-            if (patientSearch.smart() || type !== 'oauth2') {
-                deferred.resolve("authorized");
-            } else {
-                if (sessionStorage.tokenResponse) {
-                    //execute sign in except when we are in bindController
-                }
-                deferred.resolve("unauthorized");
-            }
-        });
-
-        return deferred.promise;
-    },
-    getType: function () {
-        return type;
-    },
-    showControls: function () {
-    }
-  };
-
-});
