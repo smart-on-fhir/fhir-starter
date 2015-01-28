@@ -6,7 +6,7 @@ angular.module('fhirStarter').controller("MainController",
       signout: false
     };
     
-    fhirSettings.get().then(function () {
+    fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (!fhirSettings.authServiceRequired()) {
             $scope.showing.signin = false;
             $scope.showing.signout = false;
@@ -95,7 +95,7 @@ angular.module('fhirStarter').controller("SettingsController",
 angular.module('fhirStarter').controller("PatientViewWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
   
-    fhirSettings.get().then(function () {
+    fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             $scope.unauthorized = false;
             $scope.loading = true;
@@ -130,7 +130,7 @@ angular.module('fhirStarter').controller("BindContextController",
     $scope.showing.signin = false;
     $scope.showing.signout = false;
     
-    fhirSettings.get().then(function () {
+    fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             // all is good
             $scope.unauthorized = false;
@@ -281,7 +281,7 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
   });
   $scope.patientHelper = patient;
 
-  fhirSettings.get().then( function() {
+  fhirSettings.get().then( function(settings) {
       $scope.fhirServiceUrl = settings.serviceUrl;
       $scope.fhirAuthType = settings.auth.type;
 
@@ -337,7 +337,7 @@ angular.module('fhirStarter').controller("PatientViewController", function($scop
 
 angular.module('fhirStarter').controller("PatientSearchWrapper",  
   function($scope, $routeParams, patientSearch, fhirSettings) {
-    fhirSettings.get().then(function () {
+    fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             $scope.unauthorized = false;
         } else {

@@ -37,19 +37,31 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
     
     return deferred.promise;
   }
+  
+  function loadSettings () {
+        var deferred = $q.defer();
+            if (settings.auth && settings.auth.type) {
+                deferred.resolve ();
+            } else {
+                decorateWithType(settings).then(
+                    function() {
+                        deferred.resolve();
+                    }, function() {
+                        deferred.reject()
+                    });
+            }
+        return deferred.promise;
+  }
 
   var settings = localStorage.fhirSettings ? 
   JSON.parse(localStorage.fhirSettings) : servers[0];
 
   return {
     servers: servers,
+    ensureSettingsAreAvailable: loadSettings,
     get: function() {
         var deferred = $q.defer();
-            if (settings.auth && settings.auth.type) {
-                deferred.resolve (settings);
-            } else {
-                decorateWithType(settings).then(deferred.resolve, deferred.reject);
-            }
+        loadSettings().then(function() {deferred.resolve(settings);}, deferred.reject);
         return deferred.promise;
     },
     set: function(s){
