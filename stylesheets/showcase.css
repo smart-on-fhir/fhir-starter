@@ -68,25 +68,29 @@ tr.odd { background: #fff; }
 tr.unread { font-weight: bold; }
 
     #header, #footer { 
-	display: block; width: 100%; background: #dddddd; padding: 10px;
+	display: block; width: 100%; background: #dddddd; padding: 5px 5px 0 10px;
         box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;
 	z-index: 1;
 }
 
-
-
     #header {
       position: fixed; top: 0px; left: 0px; 
       border-bottom: 10px solid #aaa;
+      z-index: 2;
     }
+    
+    #header  a:hover{
+      border-bottom: 0;
+    }
+    
     #footer {
-      position: static; bottom: 0px; left: 0px;
+      position: absolute; bottom: 0px; left: 0px;
       margin-top: -45px;
-      height: 45px;
+      height: 40px;
       border-top: 10px solid #aaa;
     }
 
-    #patient-list {  background: white; border: 1px solid black; font-weight: bold;  padding: .6em;}
+    #patient-list {  background: white; border: 1px solid black; font-weight: bold;  padding: .6em; margin-top: 5px;}
     button {  background: white; border: 1px solid black; font-weight: bold;  padding: .6em; }
 
     body {
@@ -105,7 +109,7 @@ tr.unread { font-weight: bold; }
       vertical-align: middle;  
       position: absolute;
       top: 50%;
-      margin-top: -0.5em;
+      margin-top: -0.3em;
       margin-left: 1em;
     } 
 
@@ -113,8 +117,8 @@ tr.unread { font-weight: bold; }
     width: 100%;
     margin-left: auto; margin-right: auto;
     box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; 
-    padding-top: 74px;
-    padding-bottom: 45px;
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
 
     #appnav { 

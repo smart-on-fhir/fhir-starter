@@ -8,7 +8,7 @@
     <body>
         <div id="non-footer" style="height: 100%">
           <div id="header">
-             <img src="images/smart-logo2.png" style="padding-bottom: 0px; height: 40px;" alt="SMART logo" />
+             <a href="http://docs.smartplatforms.org"><img src="images/smart-logo3.png" style="padding-bottom: 0px; height: 40px;" alt="SMART logo" /></a>
              <span id="message" class="message">Loading showcase app</span>
              <select id="patient-list" style="display:none;">
              </select>
@@ -111,7 +111,7 @@
 
         function launchApp (appTitle, launchUrl, fhirServiceUrl, patientId) {
             var url = launchUrl + "?fhirServiceUrl=" + encodeURIComponent(fhirServiceUrl) + "&patientId=" + patientId;
-            $("#message").text("Viewing app: " + appTitle);
+            $("#message").text("Showcase: " + appTitle);
             $("#loading_div").hide();
             $("#app_content_iframe_holder").show();
             $("#app_content_iframe_holder iframe").attr('src',url);
