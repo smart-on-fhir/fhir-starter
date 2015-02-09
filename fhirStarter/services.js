@@ -1,43 +1,84 @@
-angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth2) {
+angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth2, $q) {
 
   var servers = [
     {
-      name: 'Local FHIR dev server, oauth2',
-      serviceUrl: 'http://localhost:9080',
-      auth: {
-        type: 'oauth2',
-      }
+      name: 'Local FHIR dev server',
+      serviceUrl: 'http://localhost:9080'
+    }, {
+      name: "SMART on FHIR (smartplatforms.org), no auth",
+      serviceUrl: "https://fhir-open-api.smartplatforms.org"
     }, {
       name: 'Health Intersections Server (Grahame)',
-      serviceUrl: 'http://fhir.healthintersections.com.au/open',
-      auth: {
-        type: 'none'
-      }
+      serviceUrl: 'http://fhir.healthintersections.com.au/open'
     }, {
       name: 'Furore Server (Ewout)',
-      serviceUrl: 'http://spark.furore.com/fhir',
-      auth: {
-        type: 'none'
-      }
-    }, {
-      name: 'Local FHIR dev server, no auth',
-      serviceUrl: 'http://localhost:9080',
-      auth: {
-        type: 'none'
-      }
+      serviceUrl: 'http://spark.furore.com/fhir'
     }
   ];
+  
+  function decorateWithType (settings) {
+  
+    var deferred = $q.defer();
+    
+    FHIR.oauth2.resolveAuthType(settings.serviceUrl, function (type) {
+      
+        // override the security type with the one resolved via introspection
+        // of the conformance statement
+        settings.auth = {
+            type: type
+        };
+
+        deferred.resolve (settings);
+
+    }, function (err) {
+        $rootScope.$emit('error', err);
+        deferred.reject('Error resolving service type');
+    });
+    
+    return deferred.promise;
+  }
+  
+  function loadSettings () {
+        var deferred = $q.defer();
+            if (settings.auth && settings.auth.type) {
+                deferred.resolve ();
+            } else {
+                decorateWithType(settings).then(
+                    function() {
+                        deferred.resolve();
+                    }, function() {
+                        deferred.reject()
+                    });
+            }
+        return deferred.promise;
+  }
 
   var settings = localStorage.fhirSettings ? 
   JSON.parse(localStorage.fhirSettings) : servers[0];
 
   return {
     servers: servers,
-    get: function(){return settings;},
+    ensureSettingsAreAvailable: loadSettings,
+    get: function() {
+        var deferred = $q.defer();
+        loadSettings().then(function() {deferred.resolve(settings);}, deferred.reject);
+        return deferred.promise;
+    },
     set: function(s){
-      settings = s;
-      localStorage.fhirSettings = JSON.stringify(settings);
-      $rootScope.$emit('new-settings');
+        decorateWithType(s).then(function (st) {
+            settings = st;
+            localStorage.fhirSettings = JSON.stringify(settings);
+
+            if (settings.auth.type !== "oauth2") {
+                $rootScope.$emit('noauth-mode');
+                //$route.reload();
+            }
+
+            $rootScope.$emit('new-settings');
+        });
+    },
+    authServiceRequired: function () {
+        return settings.auth.type === 'oauth2';
     }
   }
 
@@ -78,7 +119,6 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
         var loc = "/ui/select-patient";
         if ($location.url() !== loc) {
             $location.url(loc);
-            
         }
         $rootScope.$digest();
       });
@@ -90,63 +130,80 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
 angular.module('fhirStarter').factory('patientSearch', function($route, $routeParams, $location, $window, $rootScope, $q, fhirSettings, oauth2) {
 
   console.log('initialzing pt search service');
-  var smart;
+  var smart = null;
   var didOauth = false;
 
-  function  getClient(){
-    if ($routeParams.code){
-      delete sessionStorage.tokenResponse;
-      FHIR.oauth2.ready($routeParams, function(smartNew){
-        smart = smartNew;
-        window.smart = smart;
-        didOauth = true;
-        $rootScope.$emit('new-client');
-      });
-    } else if (!didOauth && $routeParams.iss){
-      oauth2.authorize({
-        "name": "OAuth server issuing launch context request",
-        "serviceUrl": decodeURIComponent($routeParams.iss),
-        "auth": {
-          "type": "oauth2"
+  function initClient(){
+    fhirSettings.get().then(function(settings) {
+        if ($routeParams.code){
+          delete sessionStorage.tokenResponse;
+          FHIR.oauth2.ready($routeParams, function(smartNew){
+            smart = smartNew;
+            window.smart = smart;
+            didOauth = true;
+            $rootScope.$emit('new-client');
+          });
+        } else if (!didOauth && $routeParams.iss){
+          oauth2.authorize({
+            "name": "OAuth server issuing launch context request",
+            "serviceUrl": decodeURIComponent($routeParams.iss),
+            "auth": {
+              "type": "oauth2"
+            }
+          });
+        } else if (settings.auth && settings.auth.type === 'oauth2'){
+          oauth2.authorize(settings);
+        } else {
+          smart = new FHIR.client(settings);
+          $rootScope.$emit('new-client');
         }
-      });
-    } else if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2'){
-      oauth2.authorize(fhirSettings.get());
-    } else {
-      smart = new FHIR.client(fhirSettings.get());
-      $rootScope.$emit('new-client');
-    }
+    });
   }
   
-   function onNewClient(){
-      if (smart && smart.state && smart.state.from !== undefined){
+  function onNewClient(){
+    if (smart && smart.state && smart.state.from !== undefined){
         console.log(smart, 'back from', smart.state.from);
+        $rootScope.$emit('signed-in');
         $location.url(smart.state.from);
         $rootScope.$digest();
-      }
-   }
+    }
+  }
 
   $rootScope.$on('$routeChangeSuccess', function (scope, next, current) {
     console.log('route changed', scope, next, current);
     console.log('so params', $routeParams);
+
     if (current === undefined) {
-      getClient();
+        //initClient();
     }
   });
   
   $rootScope.$on('reconnect-request', function(){
-      if (fhirSettings.get().auth && fhirSettings.get().auth.type == 'oauth2') getClient();
-  })
+        fhirSettings.get().then(function(settings) {
+            if (settings.auth && settings.auth.type == 'oauth2') {
+                smart = null;
+                localStorage.clear();
+                initClient();
+            }
+        });
+  });
   
   $rootScope.$on('clear-client', function(){
       smart = null;
+      localStorage.clear();
+      sessionStorage.clear();
   })
 
   $rootScope.$on('new-client', onNewClient);
+  
+  $rootScope.$on('init-client', function(e){
+    initClient();
+  });
 
   $rootScope.$on('new-settings', function(e){
     sessionStorage.clear();
-    getClient();
+    initClient();
+    $location.url("/ui/select-patient");
     $route.reload();
   });
 
@@ -188,7 +245,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
       };
       smart.api.Patient.where
       .nameAll(p.tokens)
-      ._count(10)
+      ._count(25)
       ._sortAsc("family")
       ._sortAsc("given")
       .search()
@@ -274,7 +331,10 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
     smart: function(){
       return smart;
     },
-    getClient: getClient
+    connected: function(){
+      return smart !== null;
+    },
+    initClient: initClient
   };
 });
 
@@ -318,6 +378,37 @@ angular.module('fhirStarter').factory('customFhirApp', function() {
     set: function(app){
       localStorage.customFhirApp = JSON.stringify(app);
     }
-  }
+  };
+
+});
+
+angular.module('fhirStarter').factory('tools', function() {
+
+  return {
+    decodeURLParam: function (url, param) {
+        var query;
+        var data;
+        var result = [];
+        
+        try {
+            query = decodeURIComponent(url).split("?")[1];
+            data = query.split("&");
+        } catch (err) {
+            return null;
+        }
+
+        for(var i=0; i<data.length; i++) {
+            var item = data[i].split("=");
+            if (item[0] === param) {
+              result.push(item[1]);
+            }
+        }
+
+        if (result.length === 0){
+            return null;
+        }
+        return result[0];
+    }
+  };
 
 });

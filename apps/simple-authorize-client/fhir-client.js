@@ -19,7 +19,7 @@ function urlParam(p, forceArray) {
   for(var i=0; i<data.length; i++) {
     var item = data[i].split("=");
     if (item[0] === p) {
-      result.push(decodeURIComponent(item[1]));
+      result.push(item[1]);
     }
   }
 
@@ -276,16 +276,13 @@ function bypassOAuth(fhirServiceUrl, callback){
 
 BBClient.authorize = function(params, errback){
 
-  if (!errback){
-    errback = function(){
-        console.log("Failed to discover authorization URL given", params);
-    };
-  }
-  
-  // prevent inheritance of tokenResponse from parent window
-  delete sessionStorage.tokenResponse;
+ if (!errback){
+   errback = function(){
+     console.log("Failed to discover authorization URL given", params);
+   };
+ }
 
-  if (!params.client){
+ if (!params.client){
     params = {
       client: params
     };
@@ -331,7 +328,7 @@ BBClient.authorize = function(params, errback){
 
     if (params.provider.oauth2 == null) {
       sessionStorage[state] = JSON.stringify(params);
-      window.location.href = client.redirect_uri + "#state="+encodeURIComponent(state);
+      window.location.href = client.redirect_uri + "#state="+state;
       return;
     }
 
@@ -340,11 +337,11 @@ BBClient.authorize = function(params, errback){
     console.log("sending client reg", params.client);
 
     var redirect_to=params.provider.oauth2.authorize_uri + "?" + 
-      "client_id="+encodeURIComponent(client.client_id)+"&"+
-      "response_type="+encodeURIComponent(params.response_type)+"&"+
-      "scope="+encodeURIComponent(client.scope)+"&"+
-      "redirect_uri="+encodeURIComponent(client.redirect_uri)+"&"+
-      "state="+encodeURIComponent(state);
+      "client_id="+client.client_id+"&"+
+      "response_type="+params.response_type+"&"+
+      "scope="+client.scope+"&"+
+      "redirect_uri="+client.redirect_uri+"&"+
+      "state="+state;
 
     window.location.href = redirect_to;
   }, errback);
@@ -366,16 +363,13 @@ c.rest[0].resource.forEach(function(r){
     params: params
   };
 
-  if (r.searchParam) {
-    r.searchParam.forEach(function(sp){
-      params.push({
-        name: camelCased(sp.name),
-        wireName: sp.name,
-        type: sp.type
-      });
+  r.searchParam.forEach(function(sp){
+    params.push({
+      name: camelCased(sp.name),
+      wireName: sp.name,
+      type: sp.type
     });
-  }
-
+  });
 });
 
 module.exports = definitions;
@@ -16471,13 +16465,13 @@ TokenExpiredError.prototype.constructor = TokenExpiredError;
 },{"_process":31,"jws":50}],50:[function(require,module,exports){
 (function (process){
 /*global process, exports*/
-var Buffer = require('buffer').Buffer;
-var Stream = require('stream');
-var util = require('util');
-var base64url = require('base64url');
-var jwa = require('jwa');
+const Buffer = require('buffer').Buffer;
+const Stream = require('stream');
+const util = require('util');
+const base64url = require('base64url');
+const jwa = require('jwa');
 
-var ALGORITHMS = [
+const ALGORITHMS = [
   'HS256', 'HS384', 'HS512',
   'RS256', 'RS384', 'RS512',
   'ES256', 'ES384', 'ES512',
@@ -16492,18 +16486,18 @@ function toString(obj) {
 }
 
 function jwsSecuredInput(header, payload) {
-  var encodedHeader = base64url(toString(header));
-  var encodedPayload = base64url(toString(payload));
+  const encodedHeader = base64url(toString(header));
+  const encodedPayload = base64url(toString(payload));
   return util.format('%s.%s', encodedHeader, encodedPayload);
 }
 
 function jwsSign(opts) {
-  var header = opts.header;
-  var payload = opts.payload;
-  var secretOrKey = opts.secret || opts.privateKey;
-  var algo = jwa(header.alg);
-  var securedInput = jwsSecuredInput(header, payload);
-  var signature = algo.sign(securedInput, secretOrKey);
+  const header = opts.header;
+  const payload = opts.payload;
+  const secretOrKey = opts.secret || opts.privateKey;
+  const algo = jwa(header.alg);
+  const securedInput = jwsSecuredInput(header, payload);
+  const signature = algo.sign(securedInput, secretOrKey);
   return util.format('%s.%s', securedInput, signature);
 }
 
@@ -16519,7 +16513,7 @@ function safeJsonParse(thing) {
 }
 
 function headerFromJWS(jwsSig) {
-  var encodedHeader = jwsSig.split('.', 1)[0];
+  const encodedHeader = jwsSig.split('.', 1)[0];
   return safeJsonParse(base64url.decode(encodedHeader));
 }
 
@@ -16529,7 +16523,7 @@ function securedInputFromJWS(jwsSig) {
 
 function algoFromJWS(jwsSig) {
   var err;
-  var header = headerFromJWS(jwsSig);
+  const header = headerFromJWS(jwsSig);
   if (typeof header != 'object') {
     err = new Error("Invalid token: no header in signature '" + jwsSig + "'");
     err.code = "MISSING_HEADER";
@@ -16551,11 +16545,11 @@ function signatureFromJWS(jwsSig) {
 }
 
 function payloadFromJWS(jwsSig) {
-  var payload = jwsSig.split('.')[1];
+  const payload = jwsSig.split('.')[1];
   return base64url.decode(payload);
 }
 
-var JWS_REGEX = /^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/;
+const JWS_REGEX = /^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/;
 function isValidJws(string) {
   if (!JWS_REGEX.test(string))
     return false;
@@ -16566,9 +16560,9 @@ function isValidJws(string) {
 
 function jwsVerify(jwsSig, secretOrKey) {
   jwsSig = toString(jwsSig);
-  var signature = signatureFromJWS(jwsSig);
-  var securedInput = securedInputFromJWS(jwsSig);
-  var algo = jwa(algoFromJWS(jwsSig));
+  const signature = signatureFromJWS(jwsSig);
+  const securedInput = securedInputFromJWS(jwsSig);
+  const algo = jwa(algoFromJWS(jwsSig));
   return algo.verify(securedInput, signature, secretOrKey);
 }
 
@@ -16577,7 +16571,7 @@ function jwsDecode(jwsSig, opts) {
   jwsSig = toString(jwsSig);
   if (!isValidJws(jwsSig))
     return null;
-  var header = headerFromJWS(jwsSig);
+  const header = headerFromJWS(jwsSig);
   if (!header)
     return null;
   var payload = payloadFromJWS(jwsSig);
@@ -16591,8 +16585,8 @@ function jwsDecode(jwsSig, opts) {
 }
 
 function SignStream(opts) {
-  var secret = opts.secret||opts.privateKey||opts.key;
-  var secretStream = new DataStream(secret);
+  const secret = opts.secret||opts.privateKey||opts.key;
+  const secretStream = new DataStream(secret);
   this.readable = true;
   this.header = opts.header;
   this.secret = this.privateKey = this.key = secretStream;
@@ -16609,7 +16603,7 @@ function SignStream(opts) {
 }
 util.inherits(SignStream, Stream);
 SignStream.prototype.sign = function sign() {
-  var signature = jwsSign({
+  const signature = jwsSign({
     header: this.header,
     payload: this.payload.buffer,
     secret: this.secret.buffer,
@@ -16623,8 +16617,8 @@ SignStream.prototype.sign = function sign() {
 
 function VerifyStream(opts) {
   opts = opts || {};
-  var secretOrKey = opts.secret||opts.publicKey||opts.key;
-  var secretStream = new DataStream(secretOrKey);
+  const secretOrKey = opts.secret||opts.publicKey||opts.key;
+  const secretStream = new DataStream(secretOrKey);
   this.readable = true;
   this.secret = this.publicKey = this.key = secretStream;
   this.signature = new DataStream(opts.signature);
@@ -16640,8 +16634,8 @@ function VerifyStream(opts) {
 }
 util.inherits(VerifyStream, Stream);
 VerifyStream.prototype.verify = function verify() {
-  var valid = jwsVerify(this.signature.buffer, this.key.buffer);
-  var obj = jwsDecode(this.signature.buffer);
+  const valid = jwsVerify(this.signature.buffer, this.key.buffer);
+  const obj = jwsDecode(this.signature.buffer);
   this.emit('done', valid, obj);
   this.emit('data', valid);
   this.emit('end');
@@ -16711,22 +16705,22 @@ function toBase64(base64UrlString) {
   if (Buffer.isBuffer(base64UrlString))
     base64UrlString = base64UrlString.toString()
 
-  var b64str = padString(base64UrlString)
+  const b64str = padString(base64UrlString)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
   return b64str;
 }
 
 function padString(string) {
-  var segmentLength = 4;
-  var stringLength = string.length;
-  var diff = string.length % segmentLength;
+  const segmentLength = 4;
+  const stringLength = string.length;
+  const diff = string.length % segmentLength;
   if (!diff)
     return string;
   var position = stringLength;
   var padLength = segmentLength - diff;
-  var paddedStringLength = stringLength + padLength;
-  var buffer = Buffer(paddedStringLength);
+  const paddedStringLength = stringLength + padLength;
+  const buffer = Buffer(paddedStringLength);
   buffer.write(string);
   while (padLength--)
     buffer.write('=', position++);
@@ -16755,17 +16749,17 @@ module.exports = base64url;
 }).call(this,require("buffer").Buffer)
 },{"buffer":12}],52:[function(require,module,exports){
 (function (Buffer){
-var base64url = require('base64url');
-var crypto = require('crypto');
-var util = require('util');
+const base64url = require('base64url');
+const crypto = require('crypto');
+const util = require('util');
 
-var MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512" and "none".'
-var MSG_INVALID_SECRET = 'secret must be a string or buffer';
-var MSG_INVALID_KEY = 'key must be a string or buffer';
+const MSG_INVALID_ALGORITHM = '"%s" is not a valid algorithm.\n  Supported algorithms are:\n  "HS256", "HS384", "HS512", "RS256", "RS384", "RS512" and "none".'
+const MSG_INVALID_SECRET = 'secret must be a string or buffer';
+const MSG_INVALID_KEY = 'key must be a string or buffer';
 
 function typeError(template) {
-  var args = [].slice.call(arguments, 1);
-  var errMsg = util.format.bind(util, template).apply(null, args);
+  const args = [].slice.call(arguments, 1);
+  const errMsg = util.format.bind(util, template).apply(null, args);
   return new TypeError(errMsg);
 }
 
@@ -16784,15 +16778,15 @@ function createHmacSigner(bits) {
     if (!bufferOrString(secret))
       throw typeError(MSG_INVALID_SECRET);
     thing = normalizeInput(thing);
-    var hmac = crypto.createHmac('SHA' + bits, secret);
-    var sig = (hmac.update(thing), hmac.digest('base64'))
+    const hmac = crypto.createHmac('SHA' + bits, secret);
+    const sig = (hmac.update(thing), hmac.digest('base64'))
     return base64url.fromBase64(sig);
   }
 }
 
 function createHmacVerifier(bits) {
   return function verify(thing, signature, secret) {
-    var computedSig = createHmacSigner(bits)(thing, secret);
+    const computedSig = createHmacSigner(bits)(thing, secret);
     return signature === computedSig;
   }
 }
@@ -16802,8 +16796,8 @@ function createKeySigner(bits) {
     if (!bufferOrString(privateKey))
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
-    var signer = crypto.createSign('RSA-SHA' + bits);
-    var sig = (signer.update(thing), signer.sign(privateKey, 'base64'));
+    const signer = crypto.createSign('RSA-SHA' + bits);
+    const sig = (signer.update(thing), signer.sign(privateKey, 'base64'));
     return base64url.fromBase64(sig);
   }
 }
@@ -16814,7 +16808,7 @@ function createKeyVerifier(bits) {
       throw typeError(MSG_INVALID_KEY);
     thing = normalizeInput(thing);
     signature = base64url.toBase64(signature);
-    var verifier = crypto.createVerify('RSA-SHA' + bits);
+    const verifier = crypto.createVerify('RSA-SHA' + bits);
     verifier.update(thing);
     return verifier.verify(publicKey, signature, 'base64');
   }
@@ -16833,23 +16827,23 @@ function createNoneVerifier() {
 }
 
 module.exports = function jwa(algorithm) {
-  var signerFactories = {
+  const signerFactories = {
     hs: createHmacSigner,
     rs: createKeySigner,
     es: createKeySigner,
     none: createNoneSigner,
   }
-  var verifierFactories = {
+  const verifierFactories = {
     hs: createHmacVerifier,
     rs: createKeyVerifier,
     es: createKeyVerifier,
     none: createNoneVerifier,
   }
-  var match = algorithm.match(/(RS|ES|HS|none)(256|384|512)?/i);
+  const match = algorithm.match(/(RS|ES|HS|none)(256|384|512)?/i);
   if (!match)
     throw typeError(MSG_INVALID_ALGORITHM, algorithm);
-  var algo = match[1].toLowerCase();
-  var bits = match[2];
+  const algo = match[1].toLowerCase();
+  const bits = match[2];
 
   return {
     sign: signerFactories[algo](bits),

@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>SMART FHIR Starter</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="stylesheets/style.css" rel="stylesheet">
-    <script src="js/underscore.js"></script>
+    <script src="js/underscore-min.js"></script>
     <script src="js/fhir-client.js"></script>
     <script src="bootstrap/js/jquery.js"></script>
     <script src="js/modernizr.js"></script>
@@ -29,70 +30,17 @@
     </script>
 
     <style type="text/css">
-
-      #loading-patient-results {
-        position: absolute;
-        z-index:2;
-        top:0px;
-      }
-
-      .loading {
-      }
-
-      .loading-add{
-        -moz-animation: .3s fade-box;
-        -webkit-animation: .3s fade-box;
-        animation: .3s fade-box;
-      }
-
-      @keyframes fade-box {
-        0% {opacity: 1;  }
-        50% {opacity: 0;  }
-        100% {opacity: 1;  }
-      }
-
-      @-webkit-keyframes fade-box {
-        0% {opacity: 1;  }
-        50% {opacity: 0;  }
-        100% {opacity: 1;  }
-      }
-      @-o-keyframes fade-box {
-        0% {opacity: 1;  }
-        50% {opacity: 0;  }
-        100% {opacity: 1;  }
-      }
-      @-moz-keyframes fade-box {
-        0% {opacity: 1;  }
-        50% {opacity: 0;  }
-        100% {opacity: 1;  }
-      }
-
-
-      #loading-patient-results.ng-hide-remove{
-        display:block!important;
-        -webkit-transition:0.3s linear all;
-        -moz-transition:0.3s linear all;
-        -o-transition:0.3s linear all;
-        transition:0.3s linear all;
-        transition-delay: 0.5s;
-        opacity: 0;
-      }
-
-      #loading-patient-results.ng-hide-remove-active{
-        opacity: 1.0
-      }
-
       div.result {
         position: relative;
-      }
-      body {
-        padding-top: 60px;
-        overflow-y: scroll;
       }
 
       .thumb-holder {
         height: 160px;
         width: 100%;
+        text-align: center;
+      }
+      
+      .centered {
         text-align: center;
       }
 
@@ -111,10 +59,13 @@
         min-height: 220px;
         color: black;
       }
-      #patient-search{`
+      #patient-results p {
+        font-size: 1.6em; color: #777;
+      }
+      #patient-search {
         padding-right: 0px;
       }
-      #settings {
+      #settings, #signin, #signout {
         float: right;
         text-decoration:underline;
       }
@@ -127,6 +78,13 @@
         height: 15em;
         box-sizing: border-box;
       }
+      
+      .settings-dialog input {
+        box-sizing: border-box;
+        height: 30px;
+        width: 100%;
+      }
+
       .shortcut {
         text-decoration:underline;
         float: none !important;
@@ -134,9 +92,7 @@
         padding: 0px !important;
       }
       td.gender {
-        font-size: 20px; 
-        text-align: right;
-        width: 20px;
+        font-size: 1.5em; 
       }
 
       td.name {
@@ -148,13 +104,10 @@
       .step-bubble{
         border-radius: 50%;
         width: 70px;
-        height: 70px; 
-        background: #04C;
-        color: white;
-        text-align: center;
+        height: 70px; line-height: 50px; text-align: center;
+        color: white; background: #04C;
         display: inline-block;
         margin-right: 15px;
-
         margin-bottom: 5px;
         position: relative;
       }
@@ -167,7 +120,6 @@
       }
 
     </style>
-    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -189,7 +141,9 @@
         <div class="navbar-inner">
           <div class="container">
             <a class="brand " href="#">SMART FHIR Starter</a>
-            <a id="settings" class="brand" ng-click="showing.settings=!showing.settings">Settings</a>
+            <a id="settings" class="brand" ng-click="showing.settings=!showing.settings" href="">Settings</a>
+            <a id="signin" class="brand" ng-show="showing.signin" ng-click="signin()" href="">Sign In</a>
+            <a id="signout" class="brand ng-hide" ng-show="showing.signout" ng-click="signout()" href="">Sign Out</a>
           </div>
           <div ng-include="'fhirStarter/templates/settings.html'"></div>
           <div ng-include="'fhirStarter/templates/errors.html'"></div>
@@ -218,7 +172,7 @@
     <div class="container">
       <hr>
       <footer>
-      <p>&copy; Harvard Medical School / Boston Children's Hospital, 2014</p>
+      <p>&copy; Harvard Medical School / Boston Children's Hospital, 2015</p>
       </footer>
     </div>
     <script src="bootstrap/js/bootstrap-modal.js"></script>
