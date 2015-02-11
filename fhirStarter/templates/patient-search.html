@@ -1,4 +1,4 @@
-<div class="ng-hide" ng-hide="unauthorized" ng-controller="PatientSearchController">
+<div id="patient-results" class="ng-hide" ng-show="showing.content" ng-controller="PatientSearchController">
   <div class="row">
     <div class="span6">Search for patients by name</div>
   </div>
@@ -33,11 +33,11 @@
           </tr>
         </table>
         
-        <div ng-show="!loading && !oauth2.authorizing() && (patients.length==0)">
+        <div ng-show="!showing.searchloading && !oauth2.authorizing() && (patients.length==0)" class="ng-hide">
           <p>No matches, try broadening your search.</p>
         </div>
         
-        <div id="loading-patient-results" ng-show="loading && !oauth2.authorizing()">
+        <div id="loading-patient-results" ng-show="showing.searchloading && !oauth2.authorizing()" class="ng-hide">
           <p>Loading...</p>
         </div>
       </div>

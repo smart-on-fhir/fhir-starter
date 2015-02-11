@@ -142,7 +142,7 @@
           <div class="container">
             <a class="brand " href="#">SMART FHIR Starter</a>
             <a id="settings" class="brand" ng-click="showing.settings=!showing.settings" href="">Settings</a>
-            <a id="signin" class="brand" ng-show="showing.signin" ng-click="signin()" href="">Sign In</a>
+            <a id="signin" class="brand ng-hide" ng-show="showing.signin" ng-click="signin()" href="">Sign In</a>
             <a id="signout" class="brand ng-hide" ng-show="showing.signout" ng-click="signout()" href="">Sign Out</a>
           </div>
           <div ng-include="'fhirStarter/templates/settings.html'"></div>

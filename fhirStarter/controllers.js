@@ -2,8 +2,12 @@ angular.module('fhirStarter').controller("MainController",
   function($scope, $route, $rootScope, $location, fhirSettings, patientSearch){
     $scope.showing = {
       settings: false,
-      signin: true,
-      signout: false
+      signin: false,
+      signout: false,
+      content: false,
+      loading: false,
+      apps: false,
+      searchloading: false
     };
     
     fhirSettings.ensureSettingsAreAvailable().then(function () {
@@ -15,14 +19,18 @@ angular.module('fhirStarter').controller("MainController",
     });
     
     $scope.signin = function(){
+        $scope.showing.signin = false;
+        $scope.showing.loading = true;
         $rootScope.$emit('reconnect-request');
     }
     
     $scope.signout = function(){
         $scope.showing.signin = true;
         $scope.showing.signout = false;
+        $scope.showing.content = false;
+        $scope.showing.loading = false;
+        $scope.showing.apps = false;
         $rootScope.$emit('clear-client');
-        $route.reload();
     }
     
     $rootScope.$on('signed-in', function(){
@@ -97,12 +105,12 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
   
     fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
-            $scope.unauthorized = false;
-            $scope.loading = true;
-            $scope.apps = false;
+            $scope.showing.content = true;
+            $scope.showing.loading = true;
+            $scope.showing.apps = false;
             patientSearch.getOne($routeParams.pid).then(function(p){
-              $scope.loading = false;
-              $scope.apps = true;
+              $scope.showing.loading = false;
+              $scope.showing.apps = true;
               $scope.patient = p;
             });
         } else {          
@@ -110,9 +118,9 @@ angular.module('fhirStarter').controller("PatientViewWrapper",
                 // access token is available, so sign in now
                 $scope.signin();
             } else {
-                $scope.unauthorized = true;
-                $scope.loading = false;
-                $scope.apps = false;
+                $scope.showing.signin = true;
+                $scope.showing.loading = false;
+                $scope.showing.apps = false;
             }
         }
     });
@@ -133,7 +141,7 @@ angular.module('fhirStarter').controller("BindContextController",
     fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
             // all is good
-            $scope.unauthorized = false;
+            $scope.showing.content = true;
         } else {
             // need to complete auuthorization cycle
             $scope.signin();
@@ -177,7 +185,7 @@ angular.module('fhirStarter').controller("PatientSearchController",
       });
     };
 
-    $scope.loading = true;
+    $scope.showing.searchloading = true;
     $scope.mayLoadMore = true;
     $scope.patients = [];
     $scope.patientHelper = patient;
@@ -189,7 +197,7 @@ angular.module('fhirStarter').controller("PatientSearchController",
     })
     
     $rootScope.$on('set-loading', function(){
-      $scope.loading = true;
+      $scope.showing.searchloading = true;
     })
 
     /** Checks if the patient list div is (almost) fully visible on screen and if so loads more patients. */
@@ -212,10 +220,10 @@ angular.module('fhirStarter').controller("PatientSearchController",
     };
 
     $scope.loadMore = function() {
-      $scope.loading = true;
+      $scope.showing.searchloading = true;
       patientSearch.next().then(function(p){
         p.forEach(function(v) { $scope.patients.push(v) }, p);
-        $scope.loading = false;
+        $scope.showing.searchloading = false;
         $scope.mayLoadMore = true;
         $scope.loadMoreIfNeeded();
       });
@@ -248,14 +256,14 @@ angular.module('fhirStarter').controller("PatientSearchController",
           return;
         }
         $scope.patients = p;
-        $scope.loading = false;
+        $scope.showing.searchloading = false;
         $scope.mayLoadMore = true;
         $scope.loadMoreIfNeeded();
       });
     }, 300);
 
     $scope.getMore = function(){
-      $scope.loading = true;
+      $scope.showing.searchloading = true;
       search(++loadCount);
     };
   }
@@ -345,13 +353,15 @@ angular.module('fhirStarter').controller("PatientSearchWrapper",
   function($scope, $routeParams, patientSearch, fhirSettings) {
     fhirSettings.ensureSettingsAreAvailable().then(function () {
         if (patientSearch.connected() || !fhirSettings.authServiceRequired()) {
-            $scope.unauthorized = false;
+            $scope.showing.loading = false;
+            $scope.showing.content = true;
         } else {
             if (sessionStorage.tokenResponse) {
                 // access token is available, so sign-in now
                 $scope.signin();
             } else {
-                $scope.unauthorized = true;
+                $scope.showing.loading = false;
+                $scope.showing.signin = true;
             }
         }
     });
