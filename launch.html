@@ -3,6 +3,7 @@
     <script src="bootstrap/js/jquery.js"></script>
     <script>
       // A hack to get around the window popup behavior in modern web browsers
+      var launched = false;
       var key = window.location.search.slice(1);
       if (!(key in window.localStorage)){
         console.log('Failed to launch app -- no launch key.');
@@ -11,11 +12,13 @@
       window.addEventListener('storage', onStorage, false);
       function onStorage(){
       
-        if (window.localStorage[key] === 'requested-launch') {
+        if (launched || window.localStorage[key] === 'requested-launch') {
           return;
         }
         
+        launched = true;
         var details = JSON.parse(window.localStorage[key]);
+        window.localStorage.removeItem(key);
         
         // Session storage is inherited from opening window, so
         // we need to purge the tokenResponse here to avoid passing

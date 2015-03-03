@@ -182,7 +182,6 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
         fhirSettings.get().then(function(settings) {
             if (settings.auth && settings.auth.type == 'oauth2') {
                 smart = null;
-                localStorage.clear();
                 initClient();
             }
         });
@@ -190,7 +189,6 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
   
   $rootScope.$on('clear-client', function(){
       smart = null;
-      localStorage.clear();
       sessionStorage.clear();
   })
 
