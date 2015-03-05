@@ -205,9 +205,12 @@ angular.module('fhirStarter').controller("PatientSearchController",
       if (!$scope.mayLoadMore) {
         return;
       }
+      
+    // Normalize scrollTop to account for variations in browser behavior (NJS 2015-03-04)
+    var scrollTop = (document.documentElement.scrollTop > document.body.scrollTop) ? document.documentElement.scrollTop : document.body.scrollTop;
 
       var list = $('#patient-results');
-      if (list.offset().top + list.height() - 200 - document.body.scrollTop <= window.innerHeight) {
+      if (list.offset().top + list.height() - 200 - scrollTop <= window.innerHeight) {
         $scope.mayLoadMore = false;
         $scope.loadMoreIfHasMore();
       }
