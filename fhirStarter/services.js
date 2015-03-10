@@ -95,7 +95,9 @@ angular.module('fhirStarter').factory('oauth2', function($rootScope, $location) 
     authorize: function(s){
       // window.location.origin does not exist in some non-webkit browsers
       if (!window.location.origin) {
-         window.location.origin = window.location.protocol+"//"+window.location.host;
+         window.location.origin = window.location.protocol + "//" 
+            + window.location.hostname 
+            + (window.location.port ? ':' + window.location.port: '');
       }
     
       var thisUri = window.location.origin + window.location.pathname +'/';
