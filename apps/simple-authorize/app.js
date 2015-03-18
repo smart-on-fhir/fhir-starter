@@ -126,9 +126,9 @@ function authorize () {
             var token_uri = null;
 
             jQuery.each(r.rest[0].security.extension, function(responseNum, arg){
-              if (arg.url === "http://fhir-registry.smartplatforms.org/Profile/oauth-uris#authorize") {
+              if (arg.url === "http://fhir-registry.smarthealthit.org/Profile/oauth-uris#authorize") {
                 authorize_uri = arg.valueUri;
-              } else if (arg.url === "http://fhir-registry.smartplatforms.org/Profile/oauth-uris#token") {
+              } else if (arg.url === "http://fhir-registry.smarthealthit.org/Profile/oauth-uris#token") {
                 token_uri = arg.valueUri;
               }
             });

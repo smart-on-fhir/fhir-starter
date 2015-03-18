@@ -5,8 +5,8 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
       name: 'Local FHIR dev server',
       serviceUrl: 'http://localhost:9080'
     }, {
-      name: "SMART on FHIR (smartplatforms.org), no auth",
-      serviceUrl: "https://fhir-open-api.smartplatforms.org"
+      name: "SMART on FHIR (smarthealthit.org), no auth",
+      serviceUrl: "https://fhir-open-api.smarthealthit.org"
     }, {
       name: 'Health Intersections Server (Grahame)',
       serviceUrl: 'http://fhir.healthintersections.com.au/open'

@@ -4,48 +4,48 @@
       "client_id": "cardiac_risk",
       "launch_uri": "apps/cardiac-risk/launch.html",
       "redirect_uri": "apps/cardiac-risk/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/cardio.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/cardio.png"
     }, {
       "client_name": "Growth Chart",
       "client_id": "growth_chart",
       "launch_uri": "apps/growth-chart/launch.html",
       "redirect_uri": "apps/growth-chart/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/pgc.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/pgc.png"
     }, {
       "client_name": "BP Centiles",
       "client_id": "bp_centiles",
       "launch_uri": "apps/bp-centiles/launch.html",
       "redirect_uri": "apps/bp-centiles/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/bpc.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/bpc.png"
     }, {
       "client_name": "Diabetes Monograph",
       "client_id": "diabetes_monograph",
       "launch_uri": "apps/diabetes-monograph/launch.html",
       "redirect_uri": "apps/diabetes-monograph/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/monograph.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/monograph.png"
     }, {
       "client_name": "Disease Monograph",
       "client_id": "disease_monograph",
       "launch_uri": "apps/disease-monograph/launch.html",
       "redirect_uri": "apps/disease-monograph/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/dm.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/dm.png"
     }, {
       "client_name": "FHIR Demo App",
       "client_id": "fhir_demo",
       "launch_uri": "apps/fhir-demo/app/launch.html",
       "redirect_uri": "apps/fhir-demo/app/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/demo.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/demo.png"
     }, {
       "client_name": "My Web App",
       "client_id": "my_web_app",
       "launch_uri": "http://localhost:8000/fhir-app/launch.html",
       "redirect_uri": "http://localhost:8000/fhir-app/",
-      "logo_uri": "https://fhir.smartplatforms.org/images/apps/my.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/my.png"
     }, {
       "client_name": "My Mobile App",
       "client_id": "my_mobile_app",
       "redirect_uri": "smartapp://callback",
-      "logo_uri": "http://sample-apps.smartplatforms.org/img/icons/myios.png"
+      "logo_uri": "http://sample-apps.smarthealthit.org/img/icons/myios.png"
     }, {
       "client_name": "FHIR Starter",
       "client_id": "fhir_starter",
