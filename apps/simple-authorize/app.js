@@ -6,7 +6,7 @@ function urlParam(p) {
   for(var i=0; i<data.length; i++) {
     var item = data[i].split("=");
     if (item[0] === p) {
-      result.push(item[1]);
+      result.push(decodeURIComponent(item[1]));
     }
   }
 
