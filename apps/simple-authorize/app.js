@@ -78,12 +78,14 @@ function setSettings (data) {
     writeData ("app-settings", data);
 }
 
-function getSession () {
-    return readData("app-session");
+function getSession (key) {
+    return readData(key);
 }
 
 function setSession (data) {
-    writeData ("app-session", data);
+    var key = Math.round(Math.random()*100000000).toString();
+    writeData (key, data);
+    return key;
 }
 
 function hasAuthToken () {
@@ -93,8 +95,9 @@ function hasAuthToken () {
 function fetchToken () {
     var differed = $.Deferred();
     var settings = getSettings ();
-    var params = getSession ();
+    var state = urlParam("state");
     var code = urlParam("code");
+    var params = getSession (state);
 
     $.ajax({
         url: params.token_uri,
@@ -133,7 +136,7 @@ function authorize () {
               }
             });
             
-            setSession({
+            var state = setSession({
                 token_uri: token_uri
             });
 
@@ -141,7 +144,8 @@ function authorize () {
                 "client_id="+settings.client_id+"&"+
                 "response_type=code&"+
                 "scope="+settings.scope+"&"+
-                "redirect_uri="+getRedirectURI();
+                "redirect_uri="+getRedirectURI() + "&" +
+                "state=" + state;
             
             window.location.href = redirect_to;
         },
