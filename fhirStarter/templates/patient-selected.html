@@ -12,7 +12,7 @@
             <img ng-src="{{app.logo_uri}}">
           </div>
           <div class="caption">
-            <a ng-click="launch(app)" target="_blank" class="btn btn-block btn-primary">{{app.client_name}}</a>
+            <button ng-click="launch(app)" class="btn btn-block btn-primary">{{app.client_name}}</button>
           </div>
         </div>
         </li>
@@ -23,7 +23,7 @@
             <input type="text" ng-model="customapp.url" placeholder="Launch URL" required />
           </div>
           <div class="caption">
-            <a ng-click="launchCustom()" target="_blank" class="btn btn-block btn-primary">Custom App</a>
+            <button ng-click="launchCustom()" ng-disabled="!customapp.id || !customapp.url" class="btn btn-block btn-primary">Custom App</button>
           </div>
         </div>
         </li>
