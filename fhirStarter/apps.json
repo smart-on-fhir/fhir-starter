@@ -18,18 +18,6 @@
       "redirect_uri": "apps/bp-centiles/",
       "logo_uri": "https://fhir.smarthealthit.org/images/apps/bpc.png"
     }, {
-      "client_name": "Diabetes Monograph",
-      "client_id": "diabetes_monograph",
-      "launch_uri": "apps/diabetes-monograph/launch.html",
-      "redirect_uri": "apps/diabetes-monograph/",
-      "logo_uri": "https://fhir.smarthealthit.org/images/apps/monograph.png"
-    }, {
-      "client_name": "Disease Monograph",
-      "client_id": "disease_monograph",
-      "launch_uri": "apps/disease-monograph/launch.html",
-      "redirect_uri": "apps/disease-monograph/",
-      "logo_uri": "https://fhir.smarthealthit.org/images/apps/dm.png"
-    }, {
       "client_name": "FHIR Demo App",
       "client_id": "fhir_demo",
       "launch_uri": "apps/fhir-demo/app/launch.html",
