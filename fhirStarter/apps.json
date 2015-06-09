@@ -33,12 +33,12 @@
       "client_name": "My Mobile App",
       "client_id": "my_mobile_app",
       "redirect_uri": "smartapp://callback",
-      "logo_uri": "http://sample-apps.smarthealthit.org/img/icons/myios.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/mobile.png"
     }, {
       "client_name": "FHIR Starter",
       "client_id": "fhir_starter",
       "redirect_uri": "",
-      "logo_uri": "http://www.hl7.org/implement/standards/fhir/assets/images/fhir-logo-www.png"
+      "logo_uri": "https://fhir.smarthealthit.org/images/apps/fhir.png"
     }
 
   ]
