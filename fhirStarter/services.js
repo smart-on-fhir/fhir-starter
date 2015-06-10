@@ -9,10 +9,10 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
       serviceUrl: "https://fhir-open-api.smarthealthit.org"
     }, {
       name: 'Health Intersections Server (Grahame)',
-      serviceUrl: 'http://fhir.healthintersections.com.au/open'
+      serviceUrl: 'https://fhir.healthintersections.com.au/open'
     }, {
       name: 'Furore Server (Ewout)',
-      serviceUrl: 'http://spark.furore.com/fhir'
+      serviceUrl: 'https://spark.furore.com/fhir'
     }
   ];
   
