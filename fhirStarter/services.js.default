@@ -2,8 +2,8 @@ angular.module('fhirStarter').factory('fhirSettings', function($rootScope, oauth
 
   var servers = [
     {
-      name: 'Local FHIR dev server',
-      serviceUrl: 'http://localhost:9080'
+      name: '{{fhir_server_name}}',
+      serviceUrl: '{{fhir_server_base}}'
     }, {
       name: "SMART on FHIR (smarthealthit.org), no auth",
       serviceUrl: "https://fhir-open-api.smarthealthit.org"
