@@ -28,7 +28,7 @@
     <!-- Add your site or application content here -->
     <div class="container" ng-view=""></div>
 
-    <script src="../../../js/fhir-client.js"></script>
+    <script src="../node_modules/fhirclient/fhir-client.js"></script>
     <script>
       if (window.location.search.match("code=")){
         var newHash = "/after-auth" + window.location.search;
