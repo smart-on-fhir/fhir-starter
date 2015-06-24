@@ -352,7 +352,7 @@ angular.module('fhirStarter').factory('random', function() {
 angular.module('fhirStarter').factory('patient', function() {
   return {
     id: function(p){
-      return p.resourceId;
+      return p.id;
     },
     name: function(p){
       var name = p && p.name && p.name[0];

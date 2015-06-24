@@ -152,7 +152,7 @@ angular.module('fhirStarter').controller("BindContextController",
     .replace(/\+/, " ");
 
     $scope.onSelected = $scope.onSelected || function(p){
-      var pid = patient.id(p).id;
+      var pid = p.id;
       var client_id = tools.decodeURLParam($routeParams.endpoint, "client_id");
       
       patientSearch
@@ -173,7 +173,7 @@ angular.module('fhirStarter').controller("PatientSearchController",
     $scope.oauth2 = oauth2;
 
     $scope.onSelected = $scope.onSelected || function(p){
-      var pid = patient.id(p).id;
+      var pid = p.id;
       var loc = "/ui/patient-selected/"+pid;
       if ($routeParams.q == $scope.searchterm) {
         return $location.url(loc); 
