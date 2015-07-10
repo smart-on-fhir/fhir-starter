@@ -189,7 +189,7 @@ angular.module('fhirStarter').controller("PatientSearchController",
     $scope.mayLoadMore = true;
     $scope.patients = [];
     $scope.patientHelper = patient;
-    $scope.genderglyph = {"F" : "&#9792;", "M": "&#9794;"};
+    $scope.genderglyph = {"female" : "&#9792;", "male": "&#9794;"};
     $scope.searchterm  = typeof $routeParams.q ==="string" && $routeParams.q || "";
 
     $rootScope.$on('new-client', function(){

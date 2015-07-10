@@ -25,7 +25,7 @@
         <table class="table table-striped table-hover">
           <tr class="patient-row" ng-click="select($index)" ng-repeat="patient in patients">
             <td class="gender" 
-              ng-bind-html="genderglyph[patient.gender.coding[0].code]"></td>
+              ng-bind-html="genderglyph[patient.gender]"></td>
             <td class="name">
               <span ng-bind="patientHelper.name(patient)"></span>
             </td>
