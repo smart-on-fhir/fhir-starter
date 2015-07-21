@@ -159,7 +159,7 @@ angular.module('fhirStarter').controller("BindContextController",
       .registerContext({ client_id: client_id}, {patient: pid})
       .then(function(c){
         var to = decodeURIComponent($routeParams.endpoint);
-        to = to.replace(/scope=/, "scope=launch:"+c.launch_id+"+");
+        to = to.replace(/scope=/, "launch="+c.launch_id+"&scope=");
         return window.location = to;
       });
 
