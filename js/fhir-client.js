@@ -16673,6 +16673,13 @@ function urlParam(p, forceArray) {
   return result[0];
 }
 
+function stripTrailingSlash(str) {
+    if(str.substr(-1) === '/') {
+        return str.substr(0, str.length - 1);
+    }
+    return str;
+}
+
 function getPreviousToken(){
   var ret = sessionStorage.tokenResponse;
   if (ret) ret = JSON.parse(ret);
@@ -16861,7 +16868,7 @@ function providers(fhirServiceUrl, callback, errback){
 
   Adapter.get().http({
     method: "GET",
-    url: fhirServiceUrl+"/metadata"
+    url: stripTrailingSlash(fhirServiceUrl) + "/metadata"
   }).then(
     function(r){
       var res = {
@@ -17010,7 +17017,7 @@ BBClient.resolveAuthType = function (fhirServiceUrl, callback, errback) {
 
       Adapter.get().http({
          method: "GET",
-         url: fhirServiceUrl+"/metadata"
+         url: stripTrailingSlash(fhirServiceUrl) + "/metadata"
       }).then(function(r){
           var type = "none";
           
@@ -17139,7 +17146,7 @@ function FhirClient(p) {
     
     function getNext (bundle, process) {
         var i;
-        var d = bundle.data.entry;
+        var d = bundle.data.entry || [];
         var entries = [];
         for (i = 0; i < d.length; i++) {
             entries.push(d[i].resource);
