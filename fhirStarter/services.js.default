@@ -239,7 +239,7 @@ angular.module('fhirStarter').factory('patientSearch', function($route, $routePa
 
     search: function(p){
       d = $q.defer();
-      q = {"_sort:asc":"given", _count:25};
+      q = {$sort: [['given','asc'],['family','asc']], _count:25};
       if (!smart){
         d.resolve([]);
         return d.promise;
