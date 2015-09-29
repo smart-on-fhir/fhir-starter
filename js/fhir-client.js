@@ -57,16 +57,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	(function() {
 	    var mkFhir = __webpack_require__(1);
+	    var jquery = _jQuery || jQuery;
 
 	    var defer = function(){
-	        pr = jQuery.Deferred();
+	        pr = jquery.Deferred();
 	        pr.promise = pr.promise();
 	        return pr;
 	    };
 	    var adapter = {
 	        defer: defer,
 	        http: function(args) {
-	            var ret = jQuery.Deferred();
+	            var ret = jquery.Deferred();
 	            var opts = {
 	                type: args.method,
 	                url: args.url,
@@ -75,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                contentType: "application/json",
 	                data: args.data || args.params
 	            };
-	            jQuery.ajax(opts)
+	            jquery.ajax(opts)
 	                .done(function(data, status, xhr) {ret.resolve({data: data, status: status, headers: xhr.getResponseHeader, config: args});})
 	                .fail(function(err) {ret.reject({error: err, data: err, config: args});});
 	            return ret.promise();
@@ -107,6 +108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var pt = __webpack_require__(13);
 	    var refs = __webpack_require__(14);
 	    var url = __webpack_require__(15);
+	    var decorate = __webpack_require__(16);
 
 	    var cache = {};
 
@@ -148,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var $Paging = Middleware(query.$Paging);
 
-	        return {
+	        return decorate({
 	            conformance: GET.and(BaseUrl.slash("metadata")).end(http),
 	            document: POST.and(BaseUrl.slash("Document")).end(http),
 	            profile:  GET.and(BaseUrl.slash("Profile").slash(":type")).end(http),
@@ -166,7 +168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
 	            prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
 	            resolve: GET.and(refs.resolve).end(http)
-	        };
+	        }, adapter);
 
 	    };
 	    module.exports = fhir;
@@ -1132,6 +1134,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	    exports.Path = Path;
 	}).call(this);
 
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	(function() {
+	    var fhirAPI;
+	    var adapter;
+
+	    function getNext (bundle, process) {
+	        var i;
+	        var d = bundle.data.entry || [];
+	        var entries = [];
+	        for (i = 0; i < d.length; i++) {
+	            entries.push(d[i].resource);
+	        }
+	        process(entries);
+	        var def = adapter.defer();
+	        fhirAPI.nextPage({bundle:bundle.data}).then(function (r) {
+	            getNext(r, process).then(function (t) {
+	                def.resolve();
+	            });
+	        }, function(err) {def.resolve()});
+	        return def.promise;
+	    }
+	    
+	    function drain (searchParams, process, done, fail) {
+	        var ret = adapter.defer();
+	        
+	        fhirAPI.search(searchParams).then(function(data){
+	            getNext(data, process).then(function() {
+	                done();
+	            }, function(err) {
+	                fail(err);
+	            });
+	        });
+	    };
+	    
+	    function fetchAll (searchParams){
+	        var ret = adapter.defer();
+	        var results = [];
+	        
+	        drain(
+	            searchParams,
+	            function(entries) {
+	                entries.forEach(function(entry) {
+	                    results.push(entry);
+	                });
+	            },
+	            function () {
+	                ret.resolve(results);
+	            }
+	        );
+	          
+	        return ret.promise;
+	    };
+	    
+	    function decorate (client, newAdapter) {
+	        fhirAPI = client;
+	        adapter = newAdapter;
+	        client["drain"] = drain;
+	        client["fetchAll"] = fetchAll;
+	        return client;
+	    }
+	    
+	    module.exports = decorate;
+	}).call(this);
 
 /***/ }
 /******/ ])
@@ -16590,30 +16659,29 @@ module.exports = function jwa(algorithm) {
 (function (process){
 (function() {
     var smart = require('../client/entry');
-    var jQuery = require('jquery');
-    var $ = jQuery;
+    var jquery = _jQuery = require('jquery');
     
     if (!process.browser) {
       var window = require('jsdom').jsdom().createWindow();
-      jquery = jQuery(window);
+      jquery = jquery(window);
     }
     
     var defer = function(){
-        pr = jQuery.Deferred();
+        pr = jquery.Deferred();
         pr.promise = pr.promise();
         return pr;
     };
     var adapter = {
         defer: defer,
         http: function(args) {
-            var ret = jQuery.Deferred();
+            var ret = jquery.Deferred();
             var opts = {
                 type: args.method,
                 url: args.url,
                 dataType: "json",
                 data: args.data
             };
-            jQuery.ajax(opts)
+            jquery.ajax(opts)
                 .done(ret.resolve)
                 .fail(ret.reject);
             return ret.promise();
@@ -17140,54 +17208,6 @@ function FhirClient(p) {
             }, function(){
                 ret.reject("Could not fetch " + p.resource + " " + p.id);
             });
-          
-        return ret.promise;
-    };
-    
-    function getNext (bundle, process) {
-        var i;
-        var d = bundle.data.entry || [];
-        var entries = [];
-        for (i = 0; i < d.length; i++) {
-            entries.push(d[i].resource);
-        }
-        process(entries);
-        var def = Adapter.get().defer();
-        fhirAPI.nextPage({bundle:bundle.data}).then(function (r) {
-            $.when(getNext(r, process)).then(function (t) {
-                def.resolve();
-            });
-        }, function(err) {def.resolve()});
-        return def.promise;
-    }
-    
-    client.drain = function(searchParams, process, done, fail) {
-        var ret = Adapter.get().defer();
-        
-        fhirAPI.search(searchParams).then(function(data){
-            $.when(getNext(data, process)).then(function() {
-                done();
-            }, function(err) {
-                fail(err);
-            });
-        });
-    };
-    
-    client.fetchAll = function (searchParams){
-        var ret = Adapter.get().defer();
-        var results = [];
-        
-        client.drain(
-            searchParams,
-            function(entries) {
-                entries.forEach(function(entry) {
-                    results.push(entry);
-                });
-            },
-            function () {
-                ret.resolve(results);
-            }
-        );
           
         return ret.promise;
     };
