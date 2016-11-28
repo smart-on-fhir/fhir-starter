@@ -19,8 +19,10 @@
         <li class="span3">
         <div class="thumbnail">
           <div class="thumb-holder">
-            <input type="text" ng-model="customapp.id" placeholder="App ID" required /><br/>
-            <input type="text" ng-model="customapp.url" placeholder="Launch URL" required />
+            <label style="left">Client ID</label>
+            <input type="text" ng-model="customapp.id" placeholder="my_web_app" required /><br/>
+            <label style="left">Launch URL</label>
+            <input type="text" ng-model="customapp.url" placeholder="http://localhost:8000/fhir-app/launch.html" required />
           </div>
           <div class="caption">
             <button ng-click="launchCustom()" ng-disabled="!customapp.id || !customapp.url" class="btn btn-block btn-primary">Custom App</button>
