@@ -11,22 +11,23 @@
       onStorage();
       window.addEventListener('storage', onStorage, false);
       function onStorage(){
-      
+
         if (launched || window.localStorage[key] === 'requested-launch') {
           return;
         }
-        
+
         launched = true;
         var details = JSON.parse(window.localStorage[key]);
         window.localStorage.removeItem(key);
-        
+
         // Session storage is inherited from opening window, so
         // we need to purge the tokenResponse here to avoid passing
         // the FHIR Starter's token credentials to the app
         delete sessionStorage.tokenResponse;
-        
-        window.location = details.app.launch_uri + 
-        '?iss=' + encodeURIComponent(details.iss) + 
+        var separator = details.app.launch_uri.indexOf('?') > -1 ? '&' : '?';
+        window.location = details.app.launch_uri +
+        separator +
+        'iss=' + encodeURIComponent(details.iss) +
         '&launch=' + encodeURIComponent(details.context.launch_id);
       }
     </script>
