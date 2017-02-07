@@ -24,9 +24,11 @@
         // we need to purge the tokenResponse here to avoid passing
         // the FHIR Starter's token credentials to the app
         delete sessionStorage.tokenResponse;
+
+        // set the params separator by checking if the uri already contains params
         var separator = details.app.launch_uri.indexOf('?') > -1 ? '&' : '?';
-        window.location = details.app.launch_uri +
-        separator +
+
+        window.location = details.app.launch_uri + separator +
         'iss=' + encodeURIComponent(details.iss) +
         '&launch=' + encodeURIComponent(details.context.launch_id);
       }
